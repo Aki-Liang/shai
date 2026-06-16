@@ -9,11 +9,12 @@ interface Props {
   shiYao: number
   yingYao: number
   dateText: string
+  pillarsText?: string
 }
 
 /** 分享卡片。离屏渲染后由 useShareImage 栅格化为 PNG。 */
 export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard(
-  { interpretation, lines, shiYao, yingYao, dateText },
+  { interpretation, lines, shiYao, yingYao, dateText, pillarsText },
   ref,
 ) {
   return (
@@ -28,6 +29,7 @@ export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard(
       <div className="text-xl text-ink">{interpretation.primaryName}</div>
       <Hexagram lines={lines} shiYao={shiYao} yingYao={yingYao} />
       <div className="text-xs text-ink/70 text-center">{interpretation.judgment}</div>
+      {pillarsText && <div className="text-[10px] text-ink-soft">{pillarsText}</div>}
       <div className="text-[9px] text-ink/40">{dateText} · 六爻占</div>
     </div>
   )
