@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% 28%, #15110b, #080604);
+  color: #f0e6cf;
+  min-height: 100vh;
+}
+.glow-gold { filter: drop-shadow(0 0 4px rgba(230, 191, 114, 0.4)); }
+.text-glow-gold { text-shadow: 0 0 10px rgba(240, 214, 138, 0.4); }
