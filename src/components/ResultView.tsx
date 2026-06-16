@@ -12,27 +12,32 @@ export function ResultView({ reading, interpretation, onShare }: Props) {
   const { primary, changed } = reading
   return (
     <div className="flex flex-col items-center gap-6 px-6 w-full max-w-md mx-auto font-serif">
-      <div className="text-xl text-gold-bright text-glow-gold">{primary.data.name}</div>
-      <div className="flex items-center gap-6">
-        <Hexagram lines={primary.lines} shiYao={primary.data.shiYao} yingYao={primary.data.yingYao} />
+      <div className="flex items-start justify-center gap-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className="text-[10px] tracking-widest text-ink/40">本卦</div>
+          <div className="text-lg text-ink">{primary.data.name}</div>
+          <Hexagram lines={primary.lines} shiYao={primary.data.shiYao} yingYao={primary.data.yingYao} />
+        </div>
         {changed && (
           <>
-            <span className="text-paper/40">→</span>
-            <div className="opacity-50">
+            <span className="self-center text-ink/30">→</span>
+            <div className="flex flex-col items-center gap-2 opacity-60">
+              <div className="text-[10px] tracking-widest text-ink/40">变卦</div>
+              <div className="text-lg text-ink">{changed.data.name}</div>
               <Hexagram lines={changed.lines} shiYao={changed.data.shiYao} yingYao={changed.data.yingYao} />
             </div>
           </>
         )}
       </div>
-      {changed && <div className="text-xs text-paper/60">变卦 · {changed.data.name}</div>}
-      <div className="text-sm text-paper/80 text-center"><span className="text-gold-bright">卦辞　</span>{interpretation.judgment}</div>
+      <div className="text-sm text-ink/80 text-center"><span className="text-seal">卦辞　</span>{interpretation.judgment}</div>
       {interpretation.movingLineTexts.map((m) => (
-        <div key={m.index} className="text-xs text-paper/70 text-center">
-          <span className="inline-block h-2 w-2 rounded-full bg-cinnabar mr-2 align-middle" />
+        <div key={m.index} className="text-xs text-ink/70 text-center">
+          <span className="text-seal font-medium">动</span>
+          <span className="text-ink/40"> · </span>
           {m.text}
         </div>
       ))}
-      <button className="mt-2 font-serif tracking-[0.3em] text-gold-bright border border-gold/60 rounded-full px-6 py-2" onClick={onShare}>
+      <button className="mt-2 font-serif tracking-[0.3em] text-ink border border-ink/30 rounded-full px-6 py-2" onClick={onShare}>
         生成分享图
       </button>
     </div>

@@ -2,12 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
+:root { color-scheme: light; }
 body {
   margin: 0;
-  background: radial-gradient(circle at 50% 28%, #15110b, #080604);
-  color: #f0e6cf;
   min-height: 100vh;
+  background: radial-gradient(circle at 50% 18%, #faf7ef, #ece5d4);
+  color: #1b1b1b;
 }
-.glow-gold { filter: drop-shadow(0 0 4px rgba(230, 191, 114, 0.4)); }
-.text-glow-gold { text-shadow: 0 0 10px rgba(240, 214, 138, 0.4); }

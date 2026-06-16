@@ -32,9 +32,9 @@ export function CastingStage({ onComplete, throwInterval = 900 }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <p className="text-xs tracking-widest text-cinnabar font-serif">第 {Math.min(thrown + 1, TOTAL)} / {TOTAL} 爻</p>
+      <p className="text-xs tracking-widest text-seal font-serif">第 {Math.min(thrown + 1, TOTAL)} / {TOTAL} 爻</p>
       <CoinToss spinning={thrown < TOTAL} />
-      <button className="text-xs text-paper/40 underline font-serif" onClick={finish}>
+      <button className="text-xs text-ink/40 underline font-serif" onClick={finish}>
         跳过
       </button>
     </div>
