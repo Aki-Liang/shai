@@ -10,7 +10,7 @@ interface Props {
 export function Hexagram({ lines, shiYao, yingYao }: Props) {
   return (
     <div className="flex flex-col gap-2 items-center">
-      {[...lines].map((line, i) => i).reverse().map((i) => {
+      {[...lines].map((_, i) => i).reverse().map((i) => {
         const line = lines[i]
         const pos = i + 1
         const tag = pos === shiYao ? '世' : pos === yingYao ? '应' : ''
