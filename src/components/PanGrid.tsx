@@ -4,14 +4,18 @@ import { LiuQin } from '../domain/liuqin'
 interface Props {
   lines: PanLine[]
   highlight: LiuQin | null
+  /** 伏藏用神：高亮此爻位并把其伏神标为用神（用神不上卦时） */
+  yongshenHiddenAt?: number | null
 }
 
-export function PanGrid({ lines, highlight }: Props) {
+export function PanGrid({ lines, highlight, yongshenHiddenAt = null }: Props) {
   const rows = [...lines].reverse() // 上爻在最上
   return (
     <div className="flex flex-col gap-1 font-serif text-ink w-full max-w-sm">
       {rows.map((l) => {
-        const hit = highlight !== null && l.liuqin === highlight
+        const visibleHit = highlight !== null && l.liuqin === highlight
+        const hiddenHit = yongshenHiddenAt === l.position
+        const hit = visibleHit || hiddenHit
         return (
           <div
             key={l.position}
@@ -23,13 +27,14 @@ export function PanGrid({ lines, highlight }: Props) {
             }`}
           >
             <span className="text-xs text-ink-soft">{l.liushen ?? ''}</span>
-            <span className={`text-sm ${hit ? 'text-seal' : ''}`}>
+            <span className={`text-sm ${visibleHit ? 'text-seal' : ''}`}>
               {l.liuqin}
               {l.najia.zhi}
               {l.najia.wuxing}
               {l.fushen && (
-                <span className="block text-[10px] text-ink/40 leading-none">
-                  伏 {l.fushen.liuqin}
+                <span className={`block text-[10px] leading-none ${hiddenHit ? 'text-seal' : 'text-ink/40'}`}>
+                  {hiddenHit ? '用神·伏 ' : '伏 '}
+                  {l.fushen.liuqin}
                   {l.fushen.najia.zhi}
                   {l.fushen.najia.wuxing}
                 </span>

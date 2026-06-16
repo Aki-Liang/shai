@@ -43,4 +43,11 @@ describe('PanGrid', () => {
     expect(hit).toHaveLength(1)
     expect(hit[0].getAttribute('data-pos')).toBe('4')
   })
+  it('伏藏用神：yongshenHiddenAt 高亮该爻位并把伏神标为用神', () => {
+    render(<PanGrid lines={pan.lines} highlight={null} yongshenHiddenAt={2} />)
+    const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
+    expect(hit).toHaveLength(1)
+    expect(hit[0].getAttribute('data-pos')).toBe('2')
+    expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
+  })
 })
