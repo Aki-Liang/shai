@@ -506,7 +506,7 @@ export const hexagrams: HexagramData[] = [
       '六五：箕子之明夷，利贞。',
       '上六：不明晦，初登于天，后入于地。',
     ],
-    shiYao: 3, yingYao: 6,
+    shiYao: 4, yingYao: 1,
   },
   {
     order: 37, name: '风火家人', symbol: '䷤', upper: '巽', lower: '离',
@@ -772,7 +772,7 @@ export const hexagrams: HexagramData[] = [
       '六五：来章，有庆誉，吉。',
       '上六：丰其屋，蔀其家，窥其户，阒其无人，三岁不觌，凶。',
     ],
-    shiYao: 4, yingYao: 1,
+    shiYao: 5, yingYao: 2,
   },
   {
     order: 56, name: '火山旅', symbol: '䷷', upper: '离', lower: '艮',

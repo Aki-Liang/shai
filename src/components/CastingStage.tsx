@@ -10,6 +10,7 @@ interface Props {
 const TOTAL = 6
 
 export function CastingStage({ onComplete, throwInterval = 900 }: Props) {
+  // 注：此处铜钱动画纯粹为视觉演示；实际起卦运算在 finishCasting（即 onComplete 回调）中执行。
   const [thrown, setThrown] = useState(0)
   const done = useRef(false)
 

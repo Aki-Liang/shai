@@ -17,9 +17,10 @@ describe('useShareImage', () => {
     Object.defineProperty(global.navigator, 'share', { value: undefined, configurable: true })
     const { result } = renderHook(() => useShareImage())
     const node = document.createElement('div')
-    let url = ''
-    await act(async () => { url = await result.current.capture(node) })
+    let res: { dataUrl: string; shared: boolean } = { dataUrl: '', shared: false }
+    await act(async () => { res = await result.current.capture(node) })
     expect(domToPng).toHaveBeenCalledTimes(1)
-    expect(url).toContain('data:image/png')
+    expect(res.dataUrl).toContain('data:image/png')
+    expect(res.shared).toBe(false)
   })
 })

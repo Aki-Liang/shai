@@ -1,23 +1,32 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useCasting } from './hooks/useCasting'
 import { useShareImage } from './hooks/useShareImage'
 import { QuestionInput } from './components/QuestionInput'
 import { CastingStage } from './components/CastingStage'
 import { ResultView } from './components/ResultView'
 import { ShareCard } from './components/ShareCard'
+import { RandomSource } from './domain/random'
 
-export default function App() {
-  const { phase, reading, interpretation, submit, finishCasting, reset } = useCasting()
+export default function App({ rng }: { rng?: RandomSource } = {}) {
+  const { phase, reading, interpretation, submit, finishCasting, reset } = useCasting(rng)
   const { capture } = useShareImage()
   const cardRef = useRef<HTMLDivElement>(null)
+  const [toast, setToast] = useState<string | null>(null)
 
   const handleShare = async () => {
     if (!cardRef.current) return
-    const url = await capture(cardRef.current)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = '六爻占.png'
-    a.click()
+    setToast(null)
+    try {
+      const { dataUrl, shared } = await capture(cardRef.current)
+      if (!shared) {
+        const a = document.createElement('a')
+        a.href = dataUrl
+        a.download = '六爻占.png'
+        a.click()
+      }
+    } catch {
+      setToast('生成失败，可长按图片保存')
+    }
   }
 
   const dateText = new Date().toISOString().slice(0, 10).replace(/-/g, '.')
@@ -29,7 +38,7 @@ export default function App() {
       {phase === 'result' && reading && interpretation && (
         <>
           <ResultView reading={reading} interpretation={interpretation} onShare={handleShare} />
-          <button className="mt-8 text-xs text-paper/40 underline font-serif" onClick={reset}>再 占 一 卦</button>
+          <button className="mt-8 text-xs text-paper/40 underline font-serif" onClick={() => { setToast(null); reset() }}>再 占 一 卦</button>
           {/* 离屏分享卡，供栅格化 */}
           <div className="fixed -left-[9999px] top-0" aria-hidden>
             <ShareCard
@@ -42,6 +51,11 @@ export default function App() {
             />
           </div>
         </>
+      )}
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 text-xs text-paper bg-ink-2 border border-gold/40 rounded-full px-4 py-2 font-serif">
+          {toast}
+        </div>
       )}
     </main>
   )
