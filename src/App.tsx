@@ -54,7 +54,7 @@ export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock 
               shiYao={pan.reading.primary.data.shiYao}
               yingYao={pan.reading.primary.data.yingYao}
               dateText={dateText}
-              pillarsText={`${pan.pillars.year}年 · ${pan.pillars.month}月 · ${pan.pillars.day}日`}
+              pillarsText={pan.pillars ? `${pan.pillars.year}年 · ${pan.pillars.month}月 · ${pan.pillars.day}日` : undefined}
             />
           </div>
         </>

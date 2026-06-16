@@ -50,9 +50,20 @@ describe('buildPan', () => {
     expect(pan.lines[1].fushen?.najia.zhi).toBe('寅')
   })
   it('时间层接线正确：六神序与日干一致、空亡按旬空地支', () => {
-    expect(pan.lines.map((l) => l.liushen)).toEqual(liushenOf(pan.pillars.dayGan))
+    expect(pan.pillars).not.toBeNull()
+    expect(pan.lines.map((l) => l.liushen)).toEqual(liushenOf(pan.pillars!.dayGan))
     for (const l of pan.lines) {
-      expect(l.kong).toBe(pan.pillars.xunKong.includes(l.najia.zhi))
+      expect(l.kong).toBe(pan.pillars!.xunKong.includes(l.najia.zhi))
     }
+  })
+
+  it('干支历失败时降级：pillars=null、六神/空亡降级、结构层不受影响、不抛', () => {
+    const degraded = buildPan(gouReading(), new Date('invalid'))
+    expect(degraded.pillars).toBeNull()
+    expect(degraded.lines.every((l) => l.liushen === null)).toBe(true)
+    expect(degraded.lines.every((l) => l.kong === false)).toBe(true)
+    // 结构层（纳甲/六亲/伏神）仍正确
+    expect(degraded.lines.map((l) => l.liuqin)).toEqual(['父母', '子孙', '兄弟', '官鬼', '兄弟', '父母'])
+    expect(degraded.lines[1].fushen?.liuqin).toBe('妻财')
   })
 })

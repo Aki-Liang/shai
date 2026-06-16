@@ -15,4 +15,9 @@ describe('PillarsBar', () => {
     expect(screen.getByText(/甲子日/)).toBeInTheDocument()
     expect(screen.getByText(/旬空 戌亥/)).toBeInTheDocument()
   })
+
+  it('pillars 为 null 时显示降级占位', () => {
+    render(<PillarsBar pillars={null} />)
+    expect(screen.getByText('时间信息暂不可用')).toBeInTheDocument()
+  })
 })

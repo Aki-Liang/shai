@@ -23,4 +23,18 @@ describe('ShareCard', () => {
     render(<ShareCard interpretation={interp} lines={lines} shiYao={6} yingYao={3} dateText="2026.06.16" />)
     expect(screen.getByText(/六爻占/)).toBeInTheDocument()
   })
+
+  it('含干支三柱文本（pillarsText）', () => {
+    render(
+      <ShareCard
+        interpretation={interp}
+        lines={lines}
+        shiYao={6}
+        yingYao={3}
+        dateText="2026.06.16"
+        pillarsText="乙巳年 · 戊子月 · 甲子日"
+      />,
+    )
+    expect(screen.getByText(/乙巳年 · 戊子月 · 甲子日/)).toBeInTheDocument()
+  })
 })

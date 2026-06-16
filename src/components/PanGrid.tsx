@@ -22,7 +22,7 @@ export function PanGrid({ pan, highlight }: Props) {
               hit ? 'bg-seal/10' : ''
             }`}
           >
-            <span className="text-xs text-ink-soft">{l.liushen}</span>
+            <span className="text-xs text-ink-soft">{l.liushen ?? ''}</span>
             <span className={`text-sm ${hit ? 'text-seal' : ''}`}>
               {l.liuqin}
               {l.najia.zhi}
