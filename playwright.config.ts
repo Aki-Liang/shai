@@ -2,6 +2,6 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './tests/e2e',
-  webServer: { command: 'npm run dev', url: 'http://localhost:5173/liuyao/', reuseExistingServer: true },
-  use: { baseURL: 'http://localhost:5173/liuyao/' },
+  webServer: { command: 'npm run dev', url: 'http://localhost:5173/shai/', reuseExistingServer: true },
+  use: { baseURL: 'http://localhost:5173/shai/' },
 })
