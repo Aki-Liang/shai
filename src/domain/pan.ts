@@ -24,7 +24,8 @@ export interface Pan {
   reading: CastReading
   pillars: GanZhiPillars | null
   palace: Palace
-  lines: PanLine[] // 初→上
+  lines: PanLine[] // 本卦，初→上
+  changedLines: PanLine[] | null // 变卦完整盘（无动爻则 null）；六亲随本卦宫，世应取变卦自身
 }
 
 export function buildPan(reading: CastReading, date: Date): Pan {
@@ -68,5 +69,25 @@ export function buildPan(reading: CastReading, date: Date): Pan {
     }
   })
 
-  return { reading, pillars, palace, lines }
+  // 变卦完整盘：六亲随本卦之宫五行；六神同位（按日干）；世应取变卦自身；无动/伏/变出。
+  const changedLines: PanLine[] | null =
+    changed && changedNajia
+      ? changed.lines.map((line, i) => {
+          const pos = i + 1
+          const nj = changedNajia[i]
+          return {
+            position: pos,
+            liushen: liushen ? liushen[i] : null,
+            liuqin: liuqinOf(palace.element, nj.wuxing),
+            najia: nj,
+            yinyang: line.yinyang,
+            moving: false,
+            shi: pos === changed.data.shiYao,
+            ying: pos === changed.data.yingYao,
+            kong: pillars ? pillars.xunKong.includes(nj.zhi) : false,
+          }
+        })
+      : null
+
+  return { reading, pillars, palace, lines, changedLines }
 }

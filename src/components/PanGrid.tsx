@@ -1,13 +1,13 @@
-import { Pan } from '../domain/pan'
+import { PanLine } from '../domain/pan'
 import { LiuQin } from '../domain/liuqin'
 
 interface Props {
-  pan: Pan
+  lines: PanLine[]
   highlight: LiuQin | null
 }
 
-export function PanGrid({ pan, highlight }: Props) {
-  const rows = [...pan.lines].reverse() // 上爻在最上
+export function PanGrid({ lines, highlight }: Props) {
+  const rows = [...lines].reverse() // 上爻在最上
   return (
     <div className="flex flex-col gap-1 font-serif text-ink w-full max-w-sm">
       {rows.map((l) => {

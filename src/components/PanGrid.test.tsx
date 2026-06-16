@@ -22,7 +22,7 @@ const pan = {
 
 describe('PanGrid', () => {
   it('渲染六神/六亲纳甲/伏神/变出/世应/动/空', () => {
-    render(<PanGrid pan={pan} highlight={null} />)
+    render(<PanGrid lines={pan.lines} highlight={null} />)
     expect(screen.getByText('青龙')).toBeInTheDocument()
     expect(screen.getByText(/子孙亥水/)).toBeInTheDocument()
     expect(screen.getByText(/伏 妻财寅木/)).toBeInTheDocument()
@@ -32,13 +32,13 @@ describe('PanGrid', () => {
     expect(screen.getByText('空')).toBeInTheDocument()
   })
   it('上爻在最上（首行 position=6）', () => {
-    render(<PanGrid pan={pan} highlight={null} />)
+    render(<PanGrid lines={pan.lines} highlight={null} />)
     const rows = screen.getAllByTestId('pan-row')
     expect(rows[0].getAttribute('data-pos')).toBe('6')
     expect(rows[5].getAttribute('data-pos')).toBe('1')
   })
   it('highlight 命中六亲的行打标', () => {
-    render(<PanGrid pan={pan} highlight="官鬼" />)
+    render(<PanGrid lines={pan.lines} highlight="官鬼" />)
     const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
     expect(hit).toHaveLength(1)
     expect(hit[0].getAttribute('data-pos')).toBe('4')

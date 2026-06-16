@@ -66,4 +66,36 @@ describe('buildPan', () => {
     expect(degraded.lines.map((l) => l.liuqin)).toEqual(['父母', '子孙', '兄弟', '官鬼', '兄弟', '父母'])
     expect(degraded.lines[1].fushen?.liuqin).toBe('妻财')
   })
+
+  it('变卦完整盘 changedLines：天山遯（六亲随本卦宫、世二应五、无动/伏）', () => {
+    expect(pan.changedLines).not.toBeNull()
+    const cl = pan.changedLines!
+    expect(cl).toHaveLength(6)
+    expect(cl.map((l) => l.najia.zhi)).toEqual(['辰', '午', '申', '午', '申', '戌'])
+    // 变卦六亲以本卦之宫（乾金）论
+    expect(cl.map((l) => l.liuqin)).toEqual(['父母', '官鬼', '兄弟', '官鬼', '兄弟', '父母'])
+    // 变卦自身世应：遯（乾宫二世）世二应五
+    expect(cl[1].shi).toBe(true)
+    expect(cl[4].ying).toBe(true)
+    // 变卦盘无动爻、无伏神、无变出
+    expect(cl.every((l) => l.moving === false)).toBe(true)
+    expect(cl.every((l) => l.fushen === undefined)).toBe(true)
+    expect(cl.every((l) => l.changed === undefined)).toBe(true)
+    // 六神同位（与本卦一致，按日干）
+    expect(cl.map((l) => l.liushen)).toEqual(pan.lines.map((l) => l.liushen))
+  })
+
+  it('无动爻时 changedLines 为 null', () => {
+    const qianStatic: Hexagram = Array.from({ length: 6 }, () => ({
+      yinyang: 'yang',
+      moving: false,
+    })) as Hexagram
+    const staticReading: CastReading = {
+      question: '静卦',
+      primary: { lines: qianStatic, data: lookupHexagram(qianStatic) },
+      changed: null,
+      movingIndexes: [],
+    }
+    expect(buildPan(staticReading, new Date('2026-06-16T12:00:00')).changedLines).toBeNull()
+  })
 })

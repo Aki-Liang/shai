@@ -21,6 +21,15 @@ const pan = {
     { position: 5, liushen: '白虎', liuqin: '兄弟', najia: { gan: '壬', zhi: '申', wuxing: '金' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
     { position: 6, liushen: '玄武', liuqin: '子孙', najia: { gan: '壬', zhi: '戌', wuxing: '土' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
   ],
+  // 变卦完整盘 mock（故意不含「父母」，使父母高亮仅命中本卦 1/4 行）
+  changedLines: [
+    { position: 1, liushen: '青龙', liuqin: '官鬼', najia: { gan: '丙', zhi: '辰', wuxing: '土' }, yinyang: 'yin', moving: false, shi: false, ying: false, kong: false },
+    { position: 2, liushen: '朱雀', liuqin: '兄弟', najia: { gan: '丙', zhi: '午', wuxing: '火' }, yinyang: 'yin', moving: false, shi: true, ying: false, kong: false },
+    { position: 3, liushen: '勾陈', liuqin: '子孙', najia: { gan: '丙', zhi: '申', wuxing: '金' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
+    { position: 4, liushen: '螣蛇', liuqin: '官鬼', najia: { gan: '壬', zhi: '午', wuxing: '火' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
+    { position: 5, liushen: '白虎', liuqin: '兄弟', najia: { gan: '壬', zhi: '申', wuxing: '金' }, yinyang: 'yang', moving: false, shi: false, ying: true, kong: false },
+    { position: 6, liushen: '玄武', liuqin: '妻财', najia: { gan: '壬', zhi: '戌', wuxing: '土' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
+  ],
 } as unknown as Pan
 
 const interp: Interpretation = {
@@ -30,13 +39,16 @@ const interp: Interpretation = {
 }
 
 describe('ResultView', () => {
-  it('显示所问、卦名、干支柱、卦辞、动爻爻辞', () => {
+  it('显示所问、本卦/变卦、干支柱、卦辞、动爻爻辞', () => {
     render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
     expect(screen.getByText(/此次面试能成否/)).toBeInTheDocument()
     expect(screen.getByText(/天风姤/)).toBeInTheDocument()
+    expect(screen.getByText(/天山遯/)).toBeInTheDocument() // 变卦盘标签
     expect(screen.getByText(/丙午年/)).toBeInTheDocument()
     expect(screen.getByText(/女壮/)).toBeInTheDocument()
     expect(screen.getByText(/包有鱼/)).toBeInTheDocument()
+    // 本卦 + 变卦 两盘各 6 行
+    expect(screen.getAllByTestId('pan-row')).toHaveLength(12)
   })
   it('选用神高亮对应六亲行', async () => {
     render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)

@@ -20,13 +20,18 @@ export function ResultView({ pan, interpretation, onShare }: Props) {
       <div className="text-sm text-ink/70 text-center">
         所问 · <span className="text-ink">{reading.question}</span>
       </div>
-      <div className="text-lg text-ink">
-        {reading.primary.data.name}
-        {reading.changed && <span className="text-ink/40 text-sm"> → {reading.changed.data.name}</span>}
-      </div>
       <PillarsBar pillars={pan.pillars} />
       <YongshenSelector selected={yong} onSelect={setYong} />
-      <PanGrid pan={pan} highlight={yong} />
+      <div className="flex flex-col items-center gap-1 w-full">
+        <div className="text-[10px] tracking-[0.3em] text-ink/40">本卦 · {reading.primary.data.name}</div>
+        <PanGrid lines={pan.lines} highlight={yong} />
+      </div>
+      {pan.changedLines && reading.changed && (
+        <div className="flex flex-col items-center gap-1 w-full">
+          <div className="text-[10px] tracking-[0.3em] text-ink/40">变卦 · {reading.changed.data.name}</div>
+          <PanGrid lines={pan.changedLines} highlight={yong} />
+        </div>
+      )}
       <div className="text-sm text-ink/80 text-center">
         <span className="text-seal">卦辞　</span>
         {interpretation.judgment}
