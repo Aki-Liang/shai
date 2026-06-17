@@ -7,6 +7,7 @@ import { PillarsBar } from './PillarsBar'
 import { YongshenSelector } from './YongshenSelector'
 import { YongshenPanel } from './YongshenPanel'
 import { PanGrid } from './PanGrid'
+import { AiPromptBox } from './AiPromptBox'
 
 interface Props {
   pan: Pan
@@ -70,12 +71,15 @@ export function ResultView({ pan, interpretation, onShare }: Props) {
           {m.text}
         </div>
       ))}
-      <button
-        className="mt-2 font-serif tracking-[0.3em] text-ink border border-ink/30 rounded-full px-6 py-2"
-        onClick={onShare}
-      >
-        生成分享图
-      </button>
+      <div className="flex flex-col items-center gap-3 w-full mt-2">
+        <AiPromptBox pan={pan} analysis={analysis} />
+        <button
+          className="font-serif tracking-[0.3em] text-ink border border-ink/30 rounded-full px-6 py-2"
+          onClick={onShare}
+        >
+          生成分享图
+        </button>
+      </div>
     </div>
   )
 }
