@@ -2,28 +2,32 @@ import { PanLine } from '../domain/pan'
 
 interface Props {
   lines: PanLine[]
-  /** 用神所在爻位（解析层定位结果）：按爻位高亮 */
+  /** 用神所在爻位（解析层定位结果）：填充色高亮 */
   yongshenAt?: number | null
   /** 命中爻的用神取自伏神 → 伏神小字标「用神·伏」 */
   yongshenIsFu?: boolean
+  /** 面板选中的作用源爻位：描边高亮（区别于用神填充色） */
+  sourceAt?: number | null
 }
 
-export function PanGrid({ lines, yongshenAt = null, yongshenIsFu = false }: Props) {
+export function PanGrid({ lines, yongshenAt = null, yongshenIsFu = false, sourceAt = null }: Props) {
   const rows = [...lines].reverse() // 上爻在最上
   return (
     <div className="flex flex-col gap-1 font-serif text-ink w-full max-w-sm">
       {rows.map((l) => {
         const hit = yongshenAt === l.position
         const fuLabel = hit && yongshenIsFu // 命中且取自伏神 → 标「用神·伏」
+        const sourceHit = sourceAt != null && sourceAt === l.position // 作用源描边
         return (
           <div
             key={l.position}
             data-testid="pan-row"
             data-pos={l.position}
             data-highlight={hit ? 'true' : undefined}
+            data-source={sourceHit ? 'true' : undefined}
             className={`grid grid-cols-[2.5rem_5.5rem_3.5rem_1fr] items-center gap-2 px-1 py-0.5 rounded ${
               hit ? 'bg-seal/10' : ''
-            }`}
+            } ${sourceHit ? 'ring-1 ring-inset ring-seal/60' : ''}`}
           >
             <span className="text-xs text-ink-soft">{l.liushen ?? ''}</span>
             <span className={`text-sm ${hit ? 'text-seal' : ''}`}>

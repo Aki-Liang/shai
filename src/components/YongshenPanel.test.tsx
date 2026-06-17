@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { YongshenPanel } from './YongshenPanel'
 import { YongshenAnalysis } from '../domain/yongshen-analysis'
 
@@ -49,5 +50,26 @@ describe('YongshenPanel', () => {
     const legend = screen.getByTestId('force-legend').textContent ?? ''
     expect(legend).toMatch(/泄.*用神生源/)
     expect(legend).toMatch(/耗.*用神克源/)
+  })
+  it('点有爻位的作用源行（飞神 pos2）回调其爻位', async () => {
+    const onSelectSource = vi.fn()
+    render(<YongshenPanel analysis={base} target="妻财" onSelectSource={onSelectSource} />)
+    const fly = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('飞神'))!
+    await userEvent.click(fly)
+    expect(onSelectSource).toHaveBeenCalledWith(2)
+  })
+  it('再点已选中的作用源行回调 null（取消）', async () => {
+    const onSelectSource = vi.fn()
+    render(<YongshenPanel analysis={base} target="妻财" selectedSourceAt={2} onSelectSource={onSelectSource} />)
+    const fly = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('飞神'))!
+    await userEvent.click(fly)
+    expect(onSelectSource).toHaveBeenCalledWith(null)
+  })
+  it('月建/日辰行无爻位，不可点（不回调）', async () => {
+    const onSelectSource = vi.fn()
+    render(<YongshenPanel analysis={base} target="妻财" onSelectSource={onSelectSource} />)
+    const month = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('月建'))!
+    await userEvent.click(month)
+    expect(onSelectSource).not.toHaveBeenCalled()
   })
 })

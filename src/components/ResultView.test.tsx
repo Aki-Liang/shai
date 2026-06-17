@@ -83,4 +83,14 @@ describe('ResultView', () => {
       .filter((r) => r.getAttribute('data-highlight') === 'true')
     expect(primaryHit.map((r) => r.getAttribute('data-pos'))).toEqual(['1'])
   })
+  it('点作用源行（飞神 pos2）→ 本卦对应爻加描边高亮（data-source）', async () => {
+    render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
+    await userEvent.click(screen.getByTestId('yongshen-妻财')) // 伏神在二爻，作用源含飞神 pos2
+    const flyRow = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('飞神'))!
+    await userEvent.click(flyRow)
+    const sourced = within(screen.getByTestId('board-primary'))
+      .getAllByTestId('pan-row')
+      .filter((r) => r.getAttribute('data-source') === 'true')
+    expect(sourced.map((r) => r.getAttribute('data-pos'))).toEqual(['2'])
+  })
 })

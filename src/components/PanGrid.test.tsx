@@ -47,4 +47,12 @@ describe('PanGrid', () => {
     render(<PanGrid lines={pan.lines} yongshenAt={2} yongshenIsFu />)
     expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
   })
+  it('sourceAt 标记作用源爻（data-source），与用神高亮独立', () => {
+    render(<PanGrid lines={pan.lines} yongshenAt={2} sourceAt={5} />)
+    const sourced = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-source') === 'true')
+    expect(sourced.map((r) => r.getAttribute('data-pos'))).toEqual(['5'])
+    // 用神高亮仍在二爻，互不干扰
+    const yong = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
+    expect(yong.map((r) => r.getAttribute('data-pos'))).toEqual(['2'])
+  })
 })

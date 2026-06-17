@@ -4,6 +4,10 @@ import { YongTarget } from '../domain/yongshen'
 interface Props {
   analysis: YongshenAnalysis | null
   target: YongTarget
+  /** 当前选中的作用源爻位（用于行高亮联动卦象图） */
+  selectedSourceAt?: number | null
+  /** 点击有爻位的作用源行时回调；再点同一行传 null（取消） */
+  onSelectSource?: (pos: number | null) => void
 }
 
 const FIXED_LABEL: Record<string, string> = { 月: '月建', 日: '日辰', 飞: '飞神' }
@@ -20,7 +24,7 @@ function note(s: Source): string {
   return ''
 }
 
-export function YongshenPanel({ analysis, target }: Props) {
+export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSelectSource }: Props) {
   if (!analysis) {
     return (
       <div data-testid="yongshen-panel" className="text-xs text-ink/50 text-center py-2 font-serif">
@@ -48,11 +52,18 @@ export function YongshenPanel({ analysis, target }: Props) {
       </div>
       {degraded && <div className="text-[10px] text-ink/40 text-center">时间信息暂不可用，旺衰与日月生克略</div>}
       <div className="flex flex-col">
-        {a.sources.map((s, i) => (
+        {a.sources.map((s, i) => {
+          const clickable = s.position != null && !!onSelectSource
+          const active = s.position != null && s.position === selectedSourceAt
+          return (
           <div
             key={i}
             data-testid="force-row"
-            className="grid grid-cols-[5rem_3.5rem_1fr] gap-2 items-center text-xs py-1 border-t border-ink/5 first:border-t-0"
+            role={clickable ? 'button' : undefined}
+            onClick={clickable ? () => onSelectSource!(active ? null : s.position!) : undefined}
+            className={`grid grid-cols-[5rem_3.5rem_1fr] gap-2 items-center text-xs py-1 border-t border-ink/5 first:border-t-0 ${
+              clickable ? 'cursor-pointer' : ''
+            } ${active ? 'bg-seal/10 rounded' : ''}`}
           >
             <span className="text-ink-soft">{srcLabel(s)}</span>
             <span>{s.zhi}{s.wuxing}</span>
@@ -63,7 +74,8 @@ export function YongshenPanel({ analysis, target }: Props) {
               {note(s) && <span className="text-ink/40 text-[10px]">{note(s)}</span>}
             </span>
           </div>
-        ))}
+          )
+        })}
       </div>
       <div
         data-testid="force-legend"
