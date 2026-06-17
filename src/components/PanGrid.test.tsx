@@ -50,4 +50,14 @@ describe('PanGrid', () => {
     expect(hit[0].getAttribute('data-pos')).toBe('2')
     expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
   })
+  it('yongshenAt 按爻位高亮单行、六亲转焦点', () => {
+    render(<PanGrid lines={pan.lines} highlight={null} yongshenAt={4} />)
+    const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
+    expect(hit).toHaveLength(1)
+    expect(hit[0].getAttribute('data-pos')).toBe('4')
+  })
+  it('yongshenAt + yongshenIsFu 命中爻标「用神·伏」', () => {
+    render(<PanGrid lines={pan.lines} highlight={null} yongshenAt={2} yongshenIsFu />)
+    expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
+  })
 })
