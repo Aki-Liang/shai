@@ -44,4 +44,10 @@ describe('YongshenPanel', () => {
     expect(screen.getByText(/时间信息暂不可用/)).toBeInTheDocument()
     expect(screen.getByTestId('yong-head').textContent).toMatch(/旺衰：—/)
   })
+  it('受力图例解释泄/耗等词', () => {
+    render(<YongshenPanel analysis={base} target="妻财" />)
+    const legend = screen.getByTestId('force-legend').textContent ?? ''
+    expect(legend).toMatch(/泄.*用神生源/)
+    expect(legend).toMatch(/耗.*用神克源/)
+  })
 })

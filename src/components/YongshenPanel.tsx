@@ -65,6 +65,12 @@ export function YongshenPanel({ analysis, target }: Props) {
           </div>
         ))}
       </div>
+      <div
+        data-testid="force-legend"
+        className="text-[10px] text-ink-soft/80 leading-relaxed pt-1 border-t border-ink/10"
+      >
+        受力 · 得生（源生用神，强）· 比和（同五行，帮）· 泄（用神生源，泄气弱）· 耗（用神克源，耗力弱）· 受克（源克用神，伤）
+      </div>
     </div>
   )
 }
