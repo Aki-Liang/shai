@@ -107,4 +107,18 @@ describe('buildYongshenAnalysis', () => {
     expect(a.wangshuaiReason).toBeNull()
     expect(a.sources.every((s) => s.role === undefined && s.strength === undefined)).toBe(true)
   })
+  it('四期：变爻为孤立回头爻，力量评估不含卦中动爻影响', () => {
+    // 用神子孙(六爻戌土)发动回头变出卯木(克戌土→忌神)；五爻另有动爻
+    const a = buildYongshenAnalysis(
+      pan([
+        { position: 6, moving: true, changed: { najia: { gan: '壬', zhi: '卯', wuxing: '木' }, liuqin: '官鬼' } },
+        { position: 5, moving: true },
+      ]),
+      '子孙',
+    )!
+    const bian = a.sources.find((s) => s.kind === '变')!
+    expect(bian.role).toBe('忌神')
+    expect(bian.strength).toBeDefined()
+    expect(bian.strength!.influences.every((i) => i.kind !== '动')).toBe(true)
+  })
 })
