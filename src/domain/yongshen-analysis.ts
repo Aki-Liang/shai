@@ -46,7 +46,7 @@ export function buildYongshenAnalysis(pan: Pan, target: YongTarget): YongshenAna
   const { lines, pillars } = pan
   const monthZhi = lastZhi(pillars?.month)
   const dayZhi = lastZhi(pillars?.day)
-  const xunKong = pillars ? (pillars.xunKong as [DiZhi, DiZhi]) : null
+  const xunKong = pillars ? pillars.xunKong : null
   const shiPos = lines.find((l) => l.shi)?.position ?? 0
 
   // 1) 定位
