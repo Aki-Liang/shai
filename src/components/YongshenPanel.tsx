@@ -4,9 +4,7 @@ import { YongTarget } from '../domain/yongshen'
 interface Props {
   analysis: YongshenAnalysis | null
   target: YongTarget
-  /** 当前选中的作用源爻位（用于行高亮联动卦象图） */
   selectedSourceAt?: number | null
-  /** 点击有爻位的作用源行时回调；再点同一行传 null（取消） */
   onSelectSource?: (pos: number | null) => void
 }
 
@@ -18,10 +16,20 @@ function srcLabel(s: Source): string {
   return FIXED_LABEL[s.kind] ?? s.kind
 }
 
-function note(s: Source): string {
-  if (s.kind === '飞') return s.force.force === '得生' ? '飞来生伏' : s.force.force === '受克' ? '飞来克伏' : ''
-  if (s.kind === '变') return '回头'
-  return ''
+function StrengthLine({ s }: { s: Source }) {
+  if (s.special === '当令') return <div data-testid="strength-line" className="text-[10px] text-ink-soft pl-[5.2rem] mt-0.5">当令</div>
+  if (s.special === '主宰') return <div data-testid="strength-line" className="text-[10px] text-ink-soft pl-[5.2rem] mt-0.5">主宰 · 日辰不论旺衰</div>
+  if (!s.strength) return null
+  const st = s.strength
+  const inf = st.influences.map((x) => x.text).join('、')
+  return (
+    <div data-testid="strength-line" className="text-[10px] text-ink-soft pl-[5.2rem] mt-0.5 leading-relaxed">
+      旺衰 {st.wangshuai} · {st.wangshuaiReason}
+      {inf && `；${inf}`}
+      {' · '}
+      <span className={st.verdict === '无用' ? 'text-seal' : 'text-ink'}>{st.verdict}</span>
+    </div>
+  )
 }
 
 export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSelectSource }: Props) {
@@ -48,7 +56,9 @@ export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSel
           </span>
           {a.monthBreak && <span className="text-seal text-xs"> · 月破</span>}
         </span>
-        <span className="text-xs text-ink-soft">旺衰：{a.wangshuai ?? '—'}</span>
+        <span className="text-xs text-ink-soft">
+          旺衰：{a.wangshuai ?? '—'}{a.wangshuaiReason && ` · ${a.wangshuaiReason}`}
+        </span>
       </div>
       {degraded && <div className="text-[10px] text-ink/40 text-center">时间信息暂不可用，旺衰与日月生克略</div>}
       <div className="flex flex-col">
@@ -56,32 +66,34 @@ export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSel
           const clickable = s.position != null && !!onSelectSource
           const active = s.position != null && s.position === selectedSourceAt
           return (
-          <div
-            key={i}
-            data-testid="force-row"
-            role={clickable ? 'button' : undefined}
-            onClick={clickable ? () => onSelectSource!(active ? null : s.position!) : undefined}
-            className={`grid grid-cols-[5rem_3.5rem_1fr] gap-2 items-center text-xs py-1 border-t border-ink/5 first:border-t-0 ${
-              clickable ? 'cursor-pointer' : ''
-            } ${active ? 'bg-seal/10 rounded' : ''}`}
-          >
-            <span className="text-ink-soft">{srcLabel(s)}</span>
-            <span>{s.zhi}{s.wuxing}</span>
-            <span className="flex items-center gap-1">
-              {s.force.chong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">冲</span>}
-              {s.force.he && <span className="text-ink border border-ink/40 rounded px-0.5 text-[10px]">合</span>}
-              <span className={s.force.force === '受克' ? 'text-seal' : 'text-ink'}>{s.force.force}</span>
-              {note(s) && <span className="text-ink/40 text-[10px]">{note(s)}</span>}
-            </span>
-          </div>
+            <div
+              key={i}
+              data-testid="force-row"
+              role={clickable ? 'button' : undefined}
+              onClick={clickable ? () => onSelectSource!(active ? null : s.position!) : undefined}
+              className={`py-1 border-t border-ink/5 first:border-t-0 ${clickable ? 'cursor-pointer' : ''} ${active ? 'bg-seal/10 rounded' : ''}`}
+            >
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-ink-soft min-w-[5.2rem]">{srcLabel(s)} · {s.zhi}{s.wuxing}</span>
+                {s.role && (
+                  <span className={`rounded px-1 text-[10px] border ${s.role === '忌神' ? 'text-seal border-seal' : 'text-ink border-ink/45'}`}>
+                    {s.role}
+                  </span>
+                )}
+                <span className="flex items-center gap-1 ml-auto">
+                  {s.force.chong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">冲</span>}
+                  {s.force.he && <span className="text-ink border border-ink/40 rounded px-0.5 text-[10px]">合</span>}
+                  <span className={s.force.force === '受克' ? 'text-seal' : 'text-ink'}>{s.force.force}</span>
+                </span>
+              </div>
+              {s.role && <StrengthLine s={s} />}
+            </div>
           )
         })}
       </div>
-      <div
-        data-testid="force-legend"
-        className="text-[10px] text-ink-soft/80 leading-relaxed pt-1 border-t border-ink/10"
-      >
-        受力 · 得生（源生用神，强）· 比和（同五行，帮）· 泄（用神生源，泄气弱）· 耗（用神克源，耗力弱）· 受克（源克用神，伤）
+      <div data-testid="force-legend" className="text-[10px] text-ink-soft/80 leading-relaxed pt-1 border-t border-ink/10">
+        受力 · 得生（源生用神，强）· 比和（同五行，帮）· 泄（用神生源，泄气弱）· 耗（用神克源，耗力弱）· 受克（源克用神，伤）<br />
+        身份 · 元神（生用神）· 忌神（克用神）
       </div>
     </div>
   )
