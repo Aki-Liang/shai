@@ -20,7 +20,8 @@ const pan = {
     { position: 3, liushen: '勾陈', liuqin: '兄弟', najia: { gan: '辛', zhi: '酉', wuxing: '金' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
     { position: 4, liushen: '螣蛇', liuqin: '父母', najia: { gan: '壬', zhi: '午', wuxing: '火' }, yinyang: 'yang', moving: false, shi: false, ying: true, kong: false },
     { position: 5, liushen: '白虎', liuqin: '兄弟', najia: { gan: '壬', zhi: '申', wuxing: '金' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
-    { position: 6, liushen: '玄武', liuqin: '子孙', najia: { gan: '壬', zhi: '戌', wuxing: '土' }, yinyang: 'yang', moving: false, shi: false, ying: false, kong: false },
+    { position: 6, liushen: '玄武', liuqin: '子孙', najia: { gan: '壬', zhi: '戌', wuxing: '土' }, yinyang: 'yang', moving: true, shi: false, ying: false, kong: false,
+      changed: { najia: { gan: '壬', zhi: '戌', wuxing: '土' }, liuqin: '妻财' } },
   ],
   // 变卦完整盘 mock（pos1 设为「父母」以验证选父母时变卦不被高亮）
   changedLines: [
@@ -92,5 +93,21 @@ describe('ResultView', () => {
       .getAllByTestId('pan-row')
       .filter((r) => r.getAttribute('data-source') === 'true')
     expect(sourced.map((r) => r.getAttribute('data-pos'))).toEqual(['2'])
+  })
+  it('点变爻·回头行 → 高亮变卦对应爻（非本卦）', async () => {
+    render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
+    await userEvent.click(screen.getByTestId('yongshen-子孙')) // 六爻子孙发动 → 变爻源 pos6
+    const bianRow = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('变爻'))!
+    await userEvent.click(bianRow)
+    // 变卦盘 pos6 被描边
+    const changedSourced = within(screen.getByTestId('board-changed'))
+      .getAllByTestId('pan-row')
+      .filter((r) => r.getAttribute('data-source') === 'true')
+    expect(changedSourced.map((r) => r.getAttribute('data-pos'))).toEqual(['6'])
+    // 本卦盘无作用源描边
+    const primarySourced = within(screen.getByTestId('board-primary'))
+      .getAllByTestId('pan-row')
+      .filter((r) => r.getAttribute('data-source') === 'true')
+    expect(primarySourced).toHaveLength(0)
   })
 })

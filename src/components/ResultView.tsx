@@ -25,6 +25,10 @@ export function ResultView({ pan, interpretation, onShare }: Props) {
     setYong(t)
     setSourceAt(null)
   }
+  // 选中的作用源按来源分流到对应盘：变爻·回头在变卦盘，飞/动在本卦盘
+  const selSource = sourceAt != null ? analysis?.sources.find((s) => s.position === sourceAt) ?? null : null
+  const primarySourceAt = selSource && selSource.kind !== '变' ? sourceAt : null
+  const changedSourceAt = selSource && selSource.kind === '变' ? sourceAt : null
   return (
     <div className="flex flex-col items-center gap-5 px-4 w-full max-w-md mx-auto font-serif">
       <div className="text-sm text-ink/70 text-center">
@@ -38,13 +42,13 @@ export function ResultView({ pan, interpretation, onShare }: Props) {
           lines={pan.lines}
           yongshenAt={analysis?.position ?? null}
           yongshenIsFu={analysis?.isFu ?? false}
-          sourceAt={sourceAt}
+          sourceAt={primarySourceAt}
         />
       </div>
       {pan.changedLines && reading.changed && (
         <div data-testid="board-changed" className="flex flex-col items-center gap-1 w-full">
           <div className="text-[10px] tracking-[0.3em] text-ink/40">变卦 · {reading.changed.data.name}</div>
-          <PanGrid lines={pan.changedLines} />
+          <PanGrid lines={pan.changedLines} sourceAt={changedSourceAt} />
         </div>
       )}
       {yong && (
