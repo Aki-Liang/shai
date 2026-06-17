@@ -4,7 +4,7 @@ test('完整占卦流程到出卦 + 排盘 + 选用神高亮', async ({ page }) 
   await page.goto('/')
   await expect(page.getByText('心有所问')).toBeVisible()
   await page.getByRole('textbox').fill('我该换工作吗？')
-  await page.getByRole('button', { name: /摇卦/ }).click()
+  await page.getByRole('button', { name: '诚心摇卦' }).click()
   await page.getByRole('button', { name: /跳过/ }).click()
 
   // 排盘要素
@@ -31,4 +31,18 @@ test('完整占卦流程到出卦 + 排盘 + 选用神高亮', async ({ page }) 
   await expect(page.getByTestId('yongshen-panel')).toBeVisible()
 
   await expect(page.getByRole('button', { name: /分享/ })).toBeVisible()
+
+  await page.getByTestId('ai-prompt-btn').click()
+  await expect(page.getByTestId('ai-prompt-text')).toBeVisible()
+})
+
+test('手动摇卦：逐爻录入成卦出排盘', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').fill('手动测试')
+  await page.getByTestId('mode-manual').click()
+  await page.getByRole('button', { name: '手动起卦' }).click()
+  await expect(page.getByTestId('manual-cast')).toBeVisible()
+  for (const b of await page.getByRole('button', { name: '阳' }).all()) await b.click()
+  await page.getByTestId('make-hexagram').click()
+  await expect(page.getByTestId('pan-row').first()).toBeVisible()
 })
