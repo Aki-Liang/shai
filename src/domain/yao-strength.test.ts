@@ -17,6 +17,7 @@ describe('assessYaoStrength', () => {
     const r = assessYaoStrength(target('巳'), base()) // 巳火午月旺
     expect(r.wangshuai).toBe('旺')
     expect(r.verdict).toBe('有力')
+    expect(r.verdictReason).toBe('得令')
   })
   it('失令但临日 → 有力（日扶）', () => {
     const r = assessYaoStrength(target('申'), base({ dayZhi: '申' })) // 申金死；临日辰申

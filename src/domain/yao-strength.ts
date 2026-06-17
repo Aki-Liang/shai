@@ -21,6 +21,7 @@ export interface YaoStrength {
   monthBreak: boolean
   influences: StrengthInfluence[]
   verdict: StrengthVerdict
+  verdictReason: string   // 判定缘由：得令/真空/月破/失令受克/得扶/无伤
 }
 
 export interface YaoStrengthCtx {
@@ -68,10 +69,12 @@ export function assessYaoStrength(x: YaoTarget, ctx: YaoStrengthCtx): YaoStrengt
   const yuePoFatal = yuePo && shiLing && !x.moving
 
   let verdict: StrengthVerdict
-  if (zhenKong || yuePoFatal) verdict = '无用'
-  else if (deLing) verdict = '有力'
-  else if (shiLing && beiKe && !fu) verdict = '无用'
-  else verdict = '有力'
+  let verdictReason: string
+  if (zhenKong) { verdict = '无用'; verdictReason = '真空' }
+  else if (yuePoFatal) { verdict = '无用'; verdictReason = '月破' }
+  else if (deLing) { verdict = '有力'; verdictReason = '得令' }
+  else if (shiLing && beiKe && !fu) { verdict = '无用'; verdictReason = '失令受克' }
+  else { verdict = '有力'; verdictReason = fu ? '得扶' : '无伤' }
 
   const influences: StrengthInfluence[] = []
   // 日
@@ -94,5 +97,5 @@ export function assessYaoStrength(x: YaoTarget, ctx: YaoStrengthCtx): YaoStrengt
   // 空
   if (kong) influences.push({ kind: '空', text: zhenKong ? '真空' : '假空', helps: zhenKong ? false : null })
 
-  return { wangshuai: ws, wangshuaiReason: wangshuaiReasonOf(x.zhi, monthZhi), kong, monthBreak: yuePo, influences, verdict }
+  return { wangshuai: ws, wangshuaiReason: wangshuaiReasonOf(x.zhi, monthZhi), kong, monthBreak: yuePo, influences, verdict, verdictReason }
 }

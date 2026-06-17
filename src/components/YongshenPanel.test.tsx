@@ -16,7 +16,7 @@ const base: YongshenAnalysis = {
     { kind: '动', position: 5, zhi: '申', wuxing: '金', force: { force: '受克', chong: true, he: false },
       role: '忌神',
       strength: { wangshuai: '死', wangshuaiReason: '午火克申金', kong: false, monthBreak: false,
-        influences: [{ kind: '动', position: 5, text: '5爻午火克（抑）', helps: false }], verdict: '无用' } },
+        influences: [{ kind: '动', position: 5, text: '5爻午火克（抑）', helps: false }], verdict: '无用', verdictReason: '失令受克' } },
   ],
 }
 
@@ -82,7 +82,7 @@ describe('YongshenPanel', () => {
     expect(screen.getAllByText('元神').length).toBeGreaterThan(0)
     const strength = screen.getAllByTestId('strength-line').map((e) => e.textContent).join(' ')
     expect(strength).toMatch(/死.*午火克申金/)
-    expect(strength).toMatch(/无用/)
+    expect(strength).toMatch(/无用（失令受克）/) // verdict 带判定缘由
     expect(strength).toMatch(/主宰/) // 日辰元神
   })
   it('用神头行带旺衰缘由', () => {

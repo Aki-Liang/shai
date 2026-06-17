@@ -27,7 +27,7 @@ function StrengthLine({ s }: { s: Source }) {
       旺衰 {st.wangshuai} · {st.wangshuaiReason}
       {inf && `；${inf}`}
       {' · '}
-      <span className={st.verdict === '无用' ? 'text-seal' : 'text-ink'}>{st.verdict}</span>
+      <span className={st.verdict === '无用' ? 'text-seal' : 'text-ink'}>{st.verdict}（{st.verdictReason}）</span>
     </div>
   )
 }
