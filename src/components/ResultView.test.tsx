@@ -51,26 +51,36 @@ describe('ResultView', () => {
     // 本卦 + 变卦 两盘各 6 行
     expect(screen.getAllByTestId('pan-row')).toHaveLength(12)
   })
-  it('用神（上卦）只在本卦高亮，变卦不染', async () => {
+  it('用神（上卦单/多现）只在本卦按爻位高亮、变卦不染，并出现分析面板', async () => {
     render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
     await userEvent.click(screen.getByTestId('yongshen-父母'))
     const primaryHit = within(screen.getByTestId('board-primary'))
       .getAllByTestId('pan-row')
       .filter((r) => r.getAttribute('data-highlight') === 'true')
-    expect(primaryHit.map((r) => r.getAttribute('data-pos')).sort()).toEqual(['1', '4'])
-    // 变卦盘虽含父母（pos1），但不染
+    expect(primaryHit).toHaveLength(1)
+    expect(['1', '4']).toContain(primaryHit[0].getAttribute('data-pos'))
     const changedHit = within(screen.getByTestId('board-changed'))
       .getAllByTestId('pan-row')
       .filter((r) => r.getAttribute('data-highlight') === 'true')
     expect(changedHit).toHaveLength(0)
+    expect(screen.getByTestId('yongshen-panel')).toBeInTheDocument()
+    expect(screen.getAllByTestId('force-row').length).toBeGreaterThan(0)
   })
-  it('用神不上卦时取伏神：高亮伏神所在本卦爻并标用神·伏', async () => {
+  it('用神不上卦取伏神：高亮伏神所挂爻并标用神·伏', async () => {
     render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
-    await userEvent.click(screen.getByTestId('yongshen-妻财')) // 本卦无妻财，二爻下伏妻财
+    await userEvent.click(screen.getByTestId('yongshen-妻财'))
     const primaryHit = within(screen.getByTestId('board-primary'))
       .getAllByTestId('pan-row')
       .filter((r) => r.getAttribute('data-highlight') === 'true')
     expect(primaryHit.map((r) => r.getAttribute('data-pos'))).toEqual(['2'])
     expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
+  })
+  it('选世爻：高亮持世爻（初爻）', async () => {
+    render(<ResultView pan={pan} interpretation={interp} onShare={vi.fn()} />)
+    await userEvent.click(screen.getByTestId('yongshen-世'))
+    const primaryHit = within(screen.getByTestId('board-primary'))
+      .getAllByTestId('pan-row')
+      .filter((r) => r.getAttribute('data-highlight') === 'true')
+    expect(primaryHit.map((r) => r.getAttribute('data-pos'))).toEqual(['1'])
   })
 })

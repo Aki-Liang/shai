@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { LiuQin } from '../domain/liuqin'
-import { YONGSHEN_HINTS } from '../domain/yongshen'
+import { YongTarget, YONGSHEN_HINTS, SHI_YONG_HINT } from '../domain/yongshen'
 
 interface Props {
-  selected: LiuQin | null
-  onSelect: (lq: LiuQin | null) => void
+  selected: YongTarget | null
+  onSelect: (t: YongTarget | null) => void
 }
+
+const TARGETS: YongTarget[] = [...YONGSHEN_HINTS.map((h) => h.liuqin), '世']
 
 export function YongshenSelector({ selected, onSelect }: Props) {
   const [showHint, setShowHint] = useState(false)
@@ -13,16 +14,16 @@ export function YongshenSelector({ selected, onSelect }: Props) {
     <div className="flex flex-col items-center gap-2 font-serif">
       <div className="flex items-center gap-2 flex-wrap justify-center">
         <span className="text-[10px] text-ink/50">用神</span>
-        {YONGSHEN_HINTS.map(({ liuqin }) => (
+        {TARGETS.map((t) => (
           <button
-            key={liuqin}
-            data-testid={`yongshen-${liuqin}`}
-            onClick={() => onSelect(selected === liuqin ? null : liuqin)}
+            key={t}
+            data-testid={`yongshen-${t}`}
+            onClick={() => onSelect(selected === t ? null : t)}
             className={`text-xs rounded-full px-2 py-0.5 border ${
-              selected === liuqin ? 'bg-seal text-white border-seal' : 'border-ink/20 text-ink-soft'
+              selected === t ? 'bg-seal text-white border-seal' : 'border-ink/20 text-ink-soft'
             }`}
           >
-            {liuqin}
+            {t === '世' ? '世爻' : t}
           </button>
         ))}
         <button
@@ -39,6 +40,9 @@ export function YongshenSelector({ selected, onSelect }: Props) {
               <span className="text-seal">{liuqin}</span> {hint}
             </div>
           ))}
+          <div>
+            <span className="text-seal">世爻</span> {SHI_YONG_HINT}
+          </div>
         </div>
       )}
     </div>
