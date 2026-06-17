@@ -3,13 +3,14 @@ import { useCasting } from './hooks/useCasting'
 import { useShareImage } from './hooks/useShareImage'
 import { QuestionInput } from './components/QuestionInput'
 import { CastingStage } from './components/CastingStage'
+import { ManualCast } from './components/ManualCast'
 import { ResultView } from './components/ResultView'
 import { ShareCard } from './components/ShareCard'
 import { RandomSource } from './domain/random'
 import { Clock } from './domain/clock'
 
 export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock } = {}) {
-  const { phase, pan, interpretation, submit, finishCasting, reset } = useCasting(rng, clock)
+  const { phase, pan, interpretation, submit, finishCasting, finishManual, reset } = useCasting(rng, clock)
   const { capture } = useShareImage()
   const cardRef = useRef<HTMLDivElement>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -36,6 +37,7 @@ export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock 
     <main className="min-h-screen flex flex-col items-center justify-center py-12">
       {phase === 'input' && <QuestionInput onSubmit={submit} />}
       {phase === 'casting' && <CastingStage onComplete={finishCasting} />}
+      {phase === 'manual' && <ManualCast onComplete={finishManual} />}
       {phase === 'result' && pan && interpretation && (
         <>
           <ResultView pan={pan} interpretation={interpretation} onShare={handleShare} />

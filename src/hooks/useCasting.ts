@@ -1,11 +1,12 @@
 import { useCallback, useState } from 'react'
 import { RandomSource, cryptoRandom } from '../domain/random'
 import { Clock, systemClock } from '../domain/clock'
-import { buildReading, CastReading } from '../domain/reading'
+import { buildReading, buildReadingFromHexagram, CastReading } from '../domain/reading'
 import { buildPan, Pan } from '../domain/pan'
 import { interpret, Interpretation } from '../domain/interpret'
+import { CastMode, Hexagram } from '../domain/types'
 
-type Phase = 'input' | 'casting' | 'result'
+type Phase = 'input' | 'casting' | 'manual' | 'result'
 
 export function useCasting(rng: RandomSource = cryptoRandom, clock: Clock = systemClock) {
   const [phase, setPhase] = useState<Phase>('input')
@@ -14,9 +15,9 @@ export function useCasting(rng: RandomSource = cryptoRandom, clock: Clock = syst
   const [pan, setPan] = useState<Pan | null>(null)
   const [interpretation, setInterpretation] = useState<Interpretation | null>(null)
 
-  const submit = useCallback((q: string) => {
+  const submit = useCallback((q: string, mode: CastMode = 'cyber') => {
     setQuestion(q)
-    setPhase('casting')
+    setPhase(mode === 'manual' ? 'manual' : 'casting')
   }, [])
 
   const finishCasting = useCallback(async () => {
@@ -27,6 +28,14 @@ export function useCasting(rng: RandomSource = cryptoRandom, clock: Clock = syst
     setPhase('result')
   }, [question, rng, clock])
 
+  const finishManual = useCallback(async (primaryLines: Hexagram) => {
+    const r = buildReadingFromHexagram(question, primaryLines)
+    setReading(r)
+    setPan(buildPan(r, clock.now()))
+    setInterpretation(await interpret(r))
+    setPhase('result')
+  }, [question, clock])
+
   const reset = useCallback(() => {
     setReading(null)
     setPan(null)
@@ -35,5 +44,5 @@ export function useCasting(rng: RandomSource = cryptoRandom, clock: Clock = syst
     setPhase('input')
   }, [])
 
-  return { phase, reading, pan, interpretation, submit, finishCasting, reset }
+  return { phase, reading, pan, interpretation, submit, finishCasting, finishManual, reset }
 }

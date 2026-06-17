@@ -73,14 +73,17 @@ export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSel
               onClick={clickable ? () => onSelectSource!(active ? null : s.position!) : undefined}
               className={`py-1 border-t border-ink/5 first:border-t-0 ${clickable ? 'cursor-pointer' : ''} ${active ? 'bg-seal/10 rounded' : ''}`}
             >
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-ink-soft min-w-[5.2rem]">{srcLabel(s)} · {s.zhi}{s.wuxing}</span>
-                {s.role && (
-                  <span className={`rounded px-1 text-[10px] border ${s.role === '忌神' ? 'text-seal border-seal' : 'text-ink border-ink/45'}`}>
-                    {s.role}
-                  </span>
-                )}
-                <span className="flex items-center gap-1 ml-auto">
+              <div className="grid grid-cols-[4.8rem_3rem_3rem_1fr] items-center gap-1.5 text-xs">
+                <span className="text-ink-soft">{srcLabel(s)}</span>
+                <span>{s.zhi}{s.wuxing}</span>
+                <span>
+                  {s.role && (
+                    <span className={`rounded px-1 text-[10px] border ${s.role === '忌神' ? 'text-seal border-seal' : 'text-ink border-ink/45'}`}>
+                      {s.role}
+                    </span>
+                  )}
+                </span>
+                <span className="flex items-center gap-1 justify-end">
                   {s.force.chong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">六冲</span>}
                   {s.force.he && <span className="text-ink border border-ink/40 rounded px-0.5 text-[10px]">六合</span>}
                   <span className={s.force.force === '受克' ? 'text-seal' : 'text-ink'}>{s.force.force}</span>
