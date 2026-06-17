@@ -22,7 +22,7 @@ const pan = {
 
 describe('PanGrid', () => {
   it('渲染六神/六亲纳甲/伏神/变出/世应/动/空', () => {
-    render(<PanGrid lines={pan.lines} highlight={null} />)
+    render(<PanGrid lines={pan.lines} />)
     expect(screen.getByText('青龙')).toBeInTheDocument()
     expect(screen.getByText(/子孙亥水/)).toBeInTheDocument()
     expect(screen.getByText(/伏 妻财寅木/)).toBeInTheDocument()
@@ -32,32 +32,19 @@ describe('PanGrid', () => {
     expect(screen.getByText('空')).toBeInTheDocument()
   })
   it('上爻在最上（首行 position=6）', () => {
-    render(<PanGrid lines={pan.lines} highlight={null} />)
+    render(<PanGrid lines={pan.lines} />)
     const rows = screen.getAllByTestId('pan-row')
     expect(rows[0].getAttribute('data-pos')).toBe('6')
     expect(rows[5].getAttribute('data-pos')).toBe('1')
   })
-  it('highlight 命中六亲的行打标', () => {
-    render(<PanGrid lines={pan.lines} highlight="官鬼" />)
-    const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
-    expect(hit).toHaveLength(1)
-    expect(hit[0].getAttribute('data-pos')).toBe('4')
-  })
-  it('伏藏用神：yongshenHiddenAt 高亮该爻位并把伏神标为用神', () => {
-    render(<PanGrid lines={pan.lines} highlight={null} yongshenHiddenAt={2} />)
-    const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
-    expect(hit).toHaveLength(1)
-    expect(hit[0].getAttribute('data-pos')).toBe('2')
-    expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
-  })
-  it('yongshenAt 按爻位高亮单行、六亲转焦点', () => {
-    render(<PanGrid lines={pan.lines} highlight={null} yongshenAt={4} />)
+  it('yongshenAt 按爻位高亮单行', () => {
+    render(<PanGrid lines={pan.lines} yongshenAt={4} />)
     const hit = screen.getAllByTestId('pan-row').filter((r) => r.getAttribute('data-highlight') === 'true')
     expect(hit).toHaveLength(1)
     expect(hit[0].getAttribute('data-pos')).toBe('4')
   })
   it('yongshenAt + yongshenIsFu 命中爻标「用神·伏」', () => {
-    render(<PanGrid lines={pan.lines} highlight={null} yongshenAt={2} yongshenIsFu />)
+    render(<PanGrid lines={pan.lines} yongshenAt={2} yongshenIsFu />)
     expect(screen.getByText(/用神·伏 妻财寅木/)).toBeInTheDocument()
   })
 })

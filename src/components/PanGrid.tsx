@@ -1,34 +1,20 @@
 import { PanLine } from '../domain/pan'
-import { LiuQin } from '../domain/liuqin'
 
 interface Props {
   lines: PanLine[]
-  highlight?: LiuQin | null
-  /** 伏藏用神（旧）：高亮此爻位并把其伏神标为用神 */
-  yongshenHiddenAt?: number | null
   /** 用神所在爻位（解析层定位结果）：按爻位高亮 */
   yongshenAt?: number | null
   /** 命中爻的用神取自伏神 → 伏神小字标「用神·伏」 */
   yongshenIsFu?: boolean
 }
 
-export function PanGrid({
-  lines,
-  highlight = null,
-  yongshenHiddenAt = null,
-  yongshenAt = null,
-  yongshenIsFu = false,
-}: Props) {
+export function PanGrid({ lines, yongshenAt = null, yongshenIsFu = false }: Props) {
   const rows = [...lines].reverse() // 上爻在最上
   return (
     <div className="flex flex-col gap-1 font-serif text-ink w-full max-w-sm">
       {rows.map((l) => {
-        const visibleHit = highlight !== null && l.liuqin === highlight
-        const hiddenHit = yongshenHiddenAt === l.position
-        const atHit = yongshenAt === l.position
-        const hit = visibleHit || hiddenHit || atHit
-        const fuLabel = hiddenHit || (atHit && yongshenIsFu) // 标「用神·伏」
-        const liuqinSeal = visibleHit || atHit // 六亲转焦点色
+        const hit = yongshenAt === l.position
+        const fuLabel = hit && yongshenIsFu // 命中且取自伏神 → 标「用神·伏」
         return (
           <div
             key={l.position}
@@ -40,7 +26,7 @@ export function PanGrid({
             }`}
           >
             <span className="text-xs text-ink-soft">{l.liushen ?? ''}</span>
-            <span className={`text-sm ${liuqinSeal ? 'text-seal' : ''}`}>
+            <span className={`text-sm ${hit ? 'text-seal' : ''}`}>
               {l.liuqin}
               {l.najia.zhi}
               {l.najia.wuxing}
