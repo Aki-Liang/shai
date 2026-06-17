@@ -16,8 +16,7 @@ export interface CastReading {
   movingIndexes: number[]
 }
 
-export function buildReading(question: string, rng: RandomSource): CastReading {
-  const primaryLines = castHexagram(rng)
+export function buildReadingFromHexagram(question: string, primaryLines: Hexagram): CastReading {
   const changedLines = changedHexagram(primaryLines)
   return {
     question,
@@ -25,4 +24,8 @@ export function buildReading(question: string, rng: RandomSource): CastReading {
     changed: changedLines ? { lines: changedLines, data: lookupHexagram(changedLines) } : null,
     movingIndexes: movingLineIndexes(primaryLines),
   }
+}
+
+export function buildReading(question: string, rng: RandomSource): CastReading {
+  return buildReadingFromHexagram(question, castHexagram(rng))
 }
