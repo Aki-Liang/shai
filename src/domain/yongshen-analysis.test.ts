@@ -85,4 +85,26 @@ describe('buildYongshenAnalysis', () => {
     const p = { ...pan(), lines: minimal }
     expect(buildYongshenAnalysis(p, '妻财')).toBeNull()
   })
+
+  it('四期：元神/忌神身份 + 力量 + 用神缘由', () => {
+    const a = buildYongshenAnalysis(pan([{ position: 5, moving: true }]), '妻财')!
+    expect(a.wangshuaiReason).toBe('寅木生午火泄气') // 用神寅木午月休
+    const fly = a.sources.find((s) => s.kind === '飞')!
+    expect(fly.role).toBe('元神') // 亥水生寅木
+    expect(fly.strength?.wangshuai).toBe('囚') // 亥水午月
+    const ji = a.sources.find((s) => s.kind === '动')!
+    expect(ji.role).toBe('忌神') // 申金克寅木
+    expect(ji.strength?.wangshuai).toBe('死') // 申金午月
+    expect(ji.strength?.verdict).toBeDefined()
+    const ri = a.sources.find((s) => s.kind === '日')!
+    expect(ri.role).toBe('元神') // 子水生寅木
+    expect(ri.special).toBe('主宰')
+    const yue = a.sources.find((s) => s.kind === '月')!
+    expect(yue.role).toBeUndefined() // 午火：用神生月=泄，无身份
+  })
+  it('四期降级 pillars=null：无 role/strength/缘由', () => {
+    const a = buildYongshenAnalysis(pan([{ position: 5, moving: true }], true), '妻财')!
+    expect(a.wangshuaiReason).toBeNull()
+    expect(a.sources.every((s) => s.role === undefined && s.strength === undefined)).toBe(true)
+  })
 })

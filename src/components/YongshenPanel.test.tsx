@@ -8,6 +8,7 @@ const base: YongshenAnalysis = {
   target: '妻财', liuqin: '妻财', najia: { gan: '甲', zhi: '寅', wuxing: '木' },
   position: 2, isFu: true, isShi: false, duplicate: null,
   wangshuai: '休', monthBreak: false, kong: false,
+  wangshuaiReason: '寅木生午火泄气',
   sources: [
     { kind: '月', zhi: '午', wuxing: '火', force: { force: '泄', chong: false, he: false } },
     { kind: '日', zhi: '子', wuxing: '水', force: { force: '得生', chong: false, he: false } },
