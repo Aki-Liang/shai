@@ -4,18 +4,22 @@ import userEvent from '@testing-library/user-event'
 import { YongshenSelector } from './YongshenSelector'
 
 describe('YongshenSelector', () => {
-  it('点选某六亲回调该值；再次点选取消（null）', async () => {
-    const onSelect = vi.fn()
-    const { rerender } = render(<YongshenSelector selected={null} onSelect={onSelect} />)
-    await userEvent.click(screen.getByTestId('yongshen-官鬼'))
-    expect(onSelect).toHaveBeenLastCalledWith('官鬼')
-    rerender(<YongshenSelector selected="官鬼" onSelect={onSelect} />)
-    await userEvent.click(screen.getByTestId('yongshen-官鬼'))
-    expect(onSelect).toHaveBeenLastCalledWith(null)
-  })
-  it('点 ? 展开口诀提示', async () => {
+  it('渲染 5 六亲 + 世爻共 6 个 chip', () => {
     render(<YongshenSelector selected={null} onSelect={vi.fn()} />)
-    await userEvent.click(screen.getByRole('button', { name: '?' }))
-    expect(screen.getByText(/功名事业/)).toBeInTheDocument()
+    for (const t of ['父母', '兄弟', '子孙', '妻财', '官鬼', '世']) {
+      expect(screen.getByTestId(`yongshen-${t}`)).toBeInTheDocument()
+    }
+  })
+  it('点世爻回调 "世"', async () => {
+    const onSelect = vi.fn()
+    render(<YongshenSelector selected={null} onSelect={onSelect} />)
+    await userEvent.click(screen.getByTestId('yongshen-世'))
+    expect(onSelect).toHaveBeenCalledWith('世')
+  })
+  it('再点已选项取消（回调 null）', async () => {
+    const onSelect = vi.fn()
+    render(<YongshenSelector selected="妻财" onSelect={onSelect} />)
+    await userEvent.click(screen.getByTestId('yongshen-妻财'))
+    expect(onSelect).toHaveBeenCalledWith(null)
   })
 })

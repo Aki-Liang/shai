@@ -13,3 +13,9 @@ export const YONGSHEN_HINTS: YongShenHint[] = [
   { liuqin: '妻财', hint: '钱财货物 · 妻子 · 薪资利润' },
   { liuqin: '官鬼', hint: '功名事业 · 丈夫 · 官非盗贼 · 疾病忧疑 · 雷电' },
 ]
+
+/** 用神目标：5 六亲之一，或世爻 */
+export type YongTarget = LiuQin | '世'
+
+/** 世爻为用：测自身/综合运势/不知取何用神时 */
+export const SHI_YONG_HINT = '测自身 · 综合运势 · 不知取何用神时，以世爻为用'
