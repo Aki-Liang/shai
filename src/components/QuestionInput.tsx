@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { CastMode } from '../domain/types'
 
 interface Props {
-  onSubmit: (question: string) => void
+  onSubmit: (question: string, mode: CastMode) => void
 }
 
 export function QuestionInput({ onSubmit }: Props) {
   const [value, setValue] = useState('')
+  const [mode, setMode] = useState<CastMode>('cyber')
+  const [showHint, setShowHint] = useState(false)
   const trimmed = value.trim()
   const valid = trimmed.length > 0
 
@@ -22,13 +25,38 @@ export function QuestionInput({ onSubmit }: Props) {
           placeholder="心诚则灵…"
         />
       </label>
+      <div className="flex items-center gap-2 font-serif">
+        {(['cyber', 'manual'] as CastMode[]).map((m) => (
+          <button
+            key={m}
+            data-testid={`mode-${m}`}
+            onClick={() => setMode(m)}
+            className={`text-xs rounded-full px-3 py-1 border ${
+              mode === m ? 'bg-seal text-white border-seal' : 'border-ink/20 text-ink-soft'
+            }`}
+          >
+            {m === 'cyber' ? '赛博摇卦' : '手动摇卦'}
+          </button>
+        ))}
+        <button
+          onClick={() => setShowHint((s) => !s)}
+          className="text-[10px] text-ink/40 border border-ink/20 rounded-full w-4 h-4 leading-none"
+        >
+          ?
+        </button>
+      </div>
+      {showHint && (
+        <p className="text-[10px] text-ink/50 font-serif text-center max-w-xs leading-relaxed">
+          赛博＝密码学随机自动起卦 · 手动＝自己摇铜钱逐爻录入
+        </p>
+      )}
       {!valid && <p className="text-xs text-seal/80 font-serif">心诚则灵，先写下所问</p>}
       <button
         className="font-serif tracking-[0.3em] text-ink border border-ink/30 rounded-full px-6 py-2 disabled:opacity-30 disabled:cursor-not-allowed"
         disabled={!valid}
-        onClick={() => valid && onSubmit(trimmed)}
+        onClick={() => valid && onSubmit(trimmed, mode)}
       >
-        诚心摇卦
+        {mode === 'cyber' ? '诚心摇卦' : '手动起卦'}
       </button>
     </div>
   )
