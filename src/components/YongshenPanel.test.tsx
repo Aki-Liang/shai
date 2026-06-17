@@ -8,11 +8,15 @@ const base: YongshenAnalysis = {
   target: '妻财', liuqin: '妻财', najia: { gan: '甲', zhi: '寅', wuxing: '木' },
   position: 2, isFu: true, isShi: false, duplicate: null,
   wangshuai: '休', monthBreak: false, kong: false,
+  wangshuaiReason: '寅木生午火泄气',
   sources: [
     { kind: '月', zhi: '午', wuxing: '火', force: { force: '泄', chong: false, he: false } },
-    { kind: '日', zhi: '子', wuxing: '水', force: { force: '得生', chong: false, he: false } },
-    { kind: '飞', position: 2, zhi: '亥', wuxing: '水', force: { force: '得生', chong: false, he: false } },
-    { kind: '动', position: 5, zhi: '申', wuxing: '金', force: { force: '受克', chong: true, he: false } },
+    { kind: '日', zhi: '子', wuxing: '水', force: { force: '得生', chong: false, he: false }, role: '元神', special: '主宰' },
+    { kind: '飞', position: 2, zhi: '亥', wuxing: '水', force: { force: '得生', chong: false, he: false }, role: '元神' },
+    { kind: '动', position: 5, zhi: '申', wuxing: '金', force: { force: '受克', chong: true, he: false },
+      role: '忌神',
+      strength: { wangshuai: '死', wangshuaiReason: '午火克申金', kong: false, monthBreak: false,
+        influences: [{ kind: '动', position: 5, text: '5爻午火克（抑）', helps: false }], verdict: '无用', verdictReason: '失令受克' } },
   ],
 }
 
@@ -71,5 +75,18 @@ describe('YongshenPanel', () => {
     const month = screen.getAllByTestId('force-row').find((r) => r.textContent?.includes('月建'))!
     await userEvent.click(month)
     expect(onSelectSource).not.toHaveBeenCalled()
+  })
+  it('元神/忌神框 + 力量行（旺衰·缘由·verdict）', () => {
+    render(<YongshenPanel analysis={base} target="妻财" />)
+    expect(screen.getByText('忌神')).toBeInTheDocument()
+    expect(screen.getAllByText('元神').length).toBeGreaterThan(0)
+    const strength = screen.getAllByTestId('strength-line').map((e) => e.textContent).join(' ')
+    expect(strength).toMatch(/死.*午火克申金/)
+    expect(strength).toMatch(/无用（失令受克）/) // verdict 带判定缘由
+    expect(strength).toMatch(/主宰/) // 日辰元神
+  })
+  it('用神头行带旺衰缘由', () => {
+    render(<YongshenPanel analysis={base} target="妻财" />)
+    expect(screen.getByTestId('yong-head').textContent).toMatch(/休 · 寅木生午火泄气/)
   })
 })

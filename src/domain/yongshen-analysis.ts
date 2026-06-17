@@ -8,6 +8,8 @@ import { wangShuaiOf, WangShuai } from './wangshuai'
 import { forceOf, YongForce } from './yong-force'
 import { chong } from './chonghe'
 import { YongTarget } from './yongshen'
+import { assessYaoStrength, YaoStrength } from './yao-strength'
+import { wangshuaiReasonOf } from './wangshuai-reason'
 
 export type SourceKind = '月' | '日' | '飞' | '动' | '变'
 export interface Source {
@@ -16,6 +18,9 @@ export interface Source {
   zhi: DiZhi
   wuxing: WuXing
   force: YongForce
+  role?: '元神' | '忌神'    // 得生→元神，受克→忌神
+  special?: '当令' | '主宰'  // 元忌落月→当令、落日→主宰
+  strength?: YaoStrength    // 元忌落动/变/飞 且 pillars 存在
 }
 export interface YongshenAnalysis {
   target: YongTarget
@@ -29,6 +34,7 @@ export interface YongshenAnalysis {
   monthBreak: boolean
   kong: boolean
   sources: Source[]
+  wangshuaiReason: string | null   // 用神旺衰缘由（pillars 存在时）
 }
 
 /** 干支柱末字 → 地支（"甲午"→"午"）；缺失返回 null */
@@ -115,5 +121,37 @@ export function buildYongshenAnalysis(pan: Pan, target: YongTarget): YongshenAna
     }
   }
 
-  return { target, liuqin, najia, position, isFu, isShi, duplicate, wangshuai, monthBreak, kong, sources }
+  const enriched =
+    monthZhi && dayZhi && xunKong
+      ? sources.map((s) => enrichSource(s, lines, { monthZhi, dayZhi, xunKong }))
+      : sources
+  const wsReason = monthZhi ? wangshuaiReasonOf(yongZhi, monthZhi) : null
+
+  return { target, liuqin, najia, position, isFu, isShi, duplicate, wangshuai, monthBreak, kong, sources: enriched, wangshuaiReason: wsReason }
+}
+
+function enrichSource(
+  s: Source,
+  lines: Pan['lines'],
+  ctx: { monthZhi: DiZhi; dayZhi: DiZhi; xunKong: [DiZhi, DiZhi] }
+): Source {
+  const role = s.force.force === '得生' ? '元神' : s.force.force === '受克' ? '忌神' : undefined
+  if (!role) return s
+  if (s.kind === '月') return { ...s, role, special: '当令' }
+  if (s.kind === '日') return { ...s, role, special: '主宰' }
+  if (s.kind === '变') {
+    return {
+      ...s, role,
+      strength: assessYaoStrength({ zhi: s.zhi, wuxing: s.wuxing, position: s.position!, moving: false }, { ...ctx, movingLines: [] }),
+    }
+  }
+  // 动 / 飞：取本卦对应显爻（飞神=该爻位显爻）
+  const line = lines.find((l) => l.position === s.position)!
+  return {
+    ...s, role,
+    strength: assessYaoStrength(
+      { zhi: line.najia.zhi, wuxing: line.najia.wuxing, position: line.position, moving: line.moving, changed: line.changed },
+      { ...ctx, movingLines: lines.filter((l) => l.moving) }
+    ),
+  }
 }

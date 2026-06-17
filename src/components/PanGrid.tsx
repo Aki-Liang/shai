@@ -57,7 +57,7 @@ export function PanGrid({ lines, yongshenAt = null, yongshenIsFu = false, source
               {l.shi && <span className="text-seal">世</span>}
               {l.ying && <span className="text-seal">应</span>}
               {l.moving && <span className="text-seal">○动</span>}
-              {l.kong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">空</span>}
+              {l.kong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">空亡</span>}
               {l.changed && (
                 <span className="text-ink-soft text-[10px]">
                   →{l.changed.liuqin}
