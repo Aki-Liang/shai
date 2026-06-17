@@ -81,8 +81,8 @@ export function YongshenPanel({ analysis, target, selectedSourceAt = null, onSel
                   </span>
                 )}
                 <span className="flex items-center gap-1 ml-auto">
-                  {s.force.chong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">冲</span>}
-                  {s.force.he && <span className="text-ink border border-ink/40 rounded px-0.5 text-[10px]">合</span>}
+                  {s.force.chong && <span className="text-seal border border-seal rounded px-0.5 text-[10px]">六冲</span>}
+                  {s.force.he && <span className="text-ink border border-ink/40 rounded px-0.5 text-[10px]">六合</span>}
                   <span className={s.force.force === '受克' ? 'text-seal' : 'text-ink'}>{s.force.force}</span>
                 </span>
               </div>

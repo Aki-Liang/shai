@@ -29,7 +29,7 @@ describe('PanGrid', () => {
     expect(screen.getByText(/→官鬼午火/)).toBeInTheDocument()
     expect(screen.getByText('世')).toBeInTheDocument()
     expect(screen.getByText('应')).toBeInTheDocument()
-    expect(screen.getByText('空')).toBeInTheDocument()
+    expect(screen.getByText('空亡')).toBeInTheDocument()
   })
   it('上爻在最上（首行 position=6）', () => {
     render(<PanGrid lines={pan.lines} />)
