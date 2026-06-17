@@ -42,7 +42,11 @@ test('手动摇卦：逐爻录入成卦出排盘', async ({ page }) => {
   await page.getByTestId('mode-manual').click()
   await page.getByRole('button', { name: '手动起卦' }).click()
   await expect(page.getByTestId('manual-cast')).toBeVisible()
-  for (const b of await page.getByRole('button', { name: '阳' }).all()) await b.click()
+  // 顺序解锁：自下而上（初爻在最末一行）逐爻点三枚阳
+  const rows = await page.getByTestId('manual-yao').all()
+  for (const row of rows.reverse()) {
+    for (const b of await row.getByRole('button', { name: '阳' }).all()) await b.click()
+  }
   await page.getByTestId('make-hexagram').click()
   await expect(page.getByTestId('pan-row').first()).toBeVisible()
 })

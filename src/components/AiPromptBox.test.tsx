@@ -34,4 +34,18 @@ describe('AiPromptBox', () => {
     expect(writeText).toHaveBeenCalled()
     expect(await screen.findByText('已复制')).toBeInTheDocument()
   })
+  it('clipboard 失败 → execCommand 兜底成功仍显已复制', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      writable: true,
+      configurable: true,
+    })
+    const exec = vi.fn().mockReturnValue(true)
+    Object.defineProperty(document, 'execCommand', { value: exec, writable: true, configurable: true })
+    render(<AiPromptBox pan={pan} analysis={null} />)
+    await userEvent.click(screen.getByTestId('ai-prompt-btn'))
+    await userEvent.click(screen.getByTestId('ai-prompt-copy'))
+    expect(exec).toHaveBeenCalledWith('copy')
+    expect(await screen.findByText('已复制')).toBeInTheDocument()
+  })
 })

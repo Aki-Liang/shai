@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Pan } from '../domain/pan'
 import { YongshenAnalysis } from '../domain/yongshen-analysis'
 import { buildAiPrompt } from '../domain/ai-prompt'
@@ -11,12 +11,20 @@ interface Props {
 export function AiPromptBox({ pan, analysis }: Props) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState<'ok' | 'fail' | null>(null)
+  const taRef = useRef<HTMLTextAreaElement>(null)
   const prompt = useMemo(() => buildAiPrompt(pan, analysis), [pan, analysis])
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(prompt)
       setCopied('ok')
+      return
+    } catch {
+      // 剪贴板 API 缺失/被拒（非 HTTPS、部分 webview）→ 兜底 execCommand
+    }
+    try {
+      taRef.current?.select()
+      setCopied(document.execCommand('copy') ? 'ok' : 'fail')
     } catch {
       setCopied('fail')
     }
@@ -34,6 +42,7 @@ export function AiPromptBox({ pan, analysis }: Props) {
       {open && (
         <div className="w-full max-w-sm flex flex-col items-center gap-2">
           <textarea
+            ref={taRef}
             data-testid="ai-prompt-text"
             readOnly
             value={prompt}
