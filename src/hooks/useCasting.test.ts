@@ -27,4 +27,13 @@ describe('useCasting 状态机', () => {
     expect(result.current.pan?.lines).toHaveLength(6)
     expect(result.current.pan?.pillars.day.length).toBe(2)
   })
+  it('submit(manual) → manual；finishManual → result', async () => {
+    const { result } = renderHook(() => useCasting(sequenceRandom([1, 1, 1])))
+    act(() => result.current.submit('问', 'manual'))
+    expect(result.current.phase).toBe('manual')
+    const lines = Array.from({ length: 6 }, () => ({ yinyang: 'yang', moving: false }))
+    await act(async () => { await result.current.finishManual(lines as never) })
+    expect(result.current.phase).toBe('result')
+    expect(result.current.interpretation?.primaryName).toContain('乾为天')
+  })
 })
