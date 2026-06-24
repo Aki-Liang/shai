@@ -19,4 +19,8 @@ describe('share-url', () => {
     window.location.hash = ''
     expect(readShareParam()).toBeNull()
   })
+  it('值含 = 不被截断', () => {
+    window.location.hash = '#s=ab==cd'
+    expect(readShareParam()).toBe('ab==cd')
+  })
 })
