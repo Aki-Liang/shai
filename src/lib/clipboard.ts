@@ -13,9 +13,11 @@ export async function copyText(text: string): Promise<boolean> {
     ta.style.opacity = '0'
     document.body.appendChild(ta)
     ta.select()
-    const ok = document.execCommand('copy')
-    document.body.removeChild(ta)
-    return ok
+    try {
+      return document.execCommand('copy')
+    } finally {
+      document.body.removeChild(ta)
+    }
   } catch {
     return false
   }

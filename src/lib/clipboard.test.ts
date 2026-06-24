@@ -21,7 +21,8 @@ describe('copyText', () => {
   })
   it('两者都失败 → false', async () => {
     vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn().mockRejectedValue(new Error('no')) } })
-    vi.spyOn(document, 'execCommand').mockReturnValue(false)
+    const exec = vi.spyOn(document, 'execCommand').mockReturnValue(false)
     expect(await copyText('hi')).toBe(false)
+    expect(exec).toHaveBeenCalledWith('copy')
   })
 })
