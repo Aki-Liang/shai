@@ -42,7 +42,7 @@ export function loadRecords(store?: KeyValueStore): CastRecord[] {
     if (typeof parsed !== 'object' || parsed === null) return []
     const env = parsed as { version?: unknown; records?: unknown }
     if (env.version !== 1 || !Array.isArray(env.records)) {
-      console.warn('[cast-record-store] 版本不符或结构异常，忽略本地记录')
+      console.warn('[cast-record-store] 版本不符或结构异常，忽略本地记录（version=', env.version, '）')
       return []
     }
     return env.records.filter(isCastRecord)
