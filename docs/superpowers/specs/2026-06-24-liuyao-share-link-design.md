@@ -79,8 +79,8 @@ export function copyText(text: string): Promise<boolean>
 ## 3. 视图
 
 ### 3.1 `components/ResultView.tsx`（改）
-- 现 `onShare: () => void` 改名 `onShareLink: () => void`；底部「生成分享图」按钮改文案「复制分享链接」，`data-testid="share-link-btn"`，`onClick={onShareLink}`。
-- 移除离屏 ShareCard 相关（ResultView 本身不含 ShareCard，离屏卡在 App）。
+- **保留 prop 名 `onShare: () => void`**（语义足够通用＝分享，且避免与 App 改动耦合导致中间态构建破坏）；底部「生成分享图」按钮改文案「复制分享链接」，`data-testid="share-link-btn"`，`onClick={onShare}`。
+- ResultView 本身不含 ShareCard（离屏卡在 App），无需改其他部分。
 
 ### 3.2 `App.tsx`（改）
 - 引入 `useCastRecords`（已有）、`useCasting`（已有）；从 useCasting 取 `record, origin, openShared`。
@@ -132,7 +132,7 @@ src/lib/clipboard.ts             # copyText
 改动：
 ```
 src/hooks/useCasting.ts          # +record 状态 / +openShared / origin 'shared'
-src/components/ResultView.tsx    # onShare→onShareLink，按钮「复制分享链接」
+src/components/ResultView.tsx    # 保留 onShare prop，按钮改「复制分享链接」+ testid
 src/App.tsx                      # 挂载读分享链接 / 复制链接 / 底部按 origin / 移除 PNG 分享
 tests/e2e/divination.spec.ts     # +分享链接路径
 ```
