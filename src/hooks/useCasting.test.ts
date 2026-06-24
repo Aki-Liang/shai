@@ -76,3 +76,26 @@ describe('useCasting 起卦记录', () => {
     expect(result.current.pan).not.toBeNull()
   })
 })
+
+describe('useCasting 分享', () => {
+  it('openShared → phase=result、origin=shared、record 与 reading 还原', async () => {
+    const { result } = renderHook(() => useCasting())
+    const record = {
+      id: 'shared', createdAt: new Date('2026-06-16T12:00:00').getTime(), question: '分享问', mode: 'cyber' as const,
+      lines: Array.from({ length: 6 }, () => ({ yinyang: 'yang' as const, moving: false })),
+    }
+    await act(async () => { await result.current.openShared(record) })
+    expect(result.current.phase).toBe('result')
+    expect(result.current.origin).toBe('shared')
+    expect(result.current.record?.question).toBe('分享问')
+    expect(result.current.reading?.question).toBe('分享问')
+    expect(result.current.pan).not.toBeNull()
+  })
+  it('finishCasting 后 record 非空（供复制链接用）', async () => {
+    const { result } = renderHook(() => useCasting(sequenceRandom([1, 1, 1]), fixedClock(new Date('2026-06-16T12:00:00'))))
+    act(() => result.current.submit('问'))
+    await act(async () => { await result.current.finishCasting() })
+    expect(result.current.record?.question).toBe('问')
+    expect(result.current.record?.createdAt).toBe(new Date('2026-06-16T12:00:00').getTime())
+  })
+})
