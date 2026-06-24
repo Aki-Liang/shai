@@ -3,9 +3,10 @@ import { CastMode } from '../domain/types'
 
 interface Props {
   onSubmit: (question: string, mode: CastMode) => void
+  onOpenHistory?: () => void
 }
 
-export function QuestionInput({ onSubmit }: Props) {
+export function QuestionInput({ onSubmit, onOpenHistory }: Props) {
   const [value, setValue] = useState('')
   const [mode, setMode] = useState<CastMode>('cyber')
   const [showHint, setShowHint] = useState(false)
@@ -14,6 +15,15 @@ export function QuestionInput({ onSubmit }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-6 px-6 w-full max-w-md mx-auto">
+      {onOpenHistory && (
+        <button
+          data-testid="open-history"
+          onClick={onOpenHistory}
+          className="self-end text-[11px] text-ink/40 underline font-serif"
+        >
+          历史记录
+        </button>
+      )}
       <h1 className="font-serif text-2xl text-ink">心有所问</h1>
       <label className="w-full">
         <span className="block text-xs text-ink/50 mb-2 font-serif">写下你想问的事</span>

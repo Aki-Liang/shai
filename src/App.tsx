@@ -1,16 +1,20 @@
 import { useRef, useState } from 'react'
 import { useCasting } from './hooks/useCasting'
+import { useCastRecords } from './hooks/useCastRecords'
 import { useShareImage } from './hooks/useShareImage'
 import { QuestionInput } from './components/QuestionInput'
 import { CastingStage } from './components/CastingStage'
 import { ManualCast } from './components/ManualCast'
 import { ResultView } from './components/ResultView'
+import { HistoryView } from './components/HistoryView'
 import { ShareCard } from './components/ShareCard'
 import { RandomSource } from './domain/random'
 import { Clock } from './domain/clock'
 
 export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock } = {}) {
-  const { phase, pan, interpretation, submit, finishCasting, finishManual, reset } = useCasting(rng, clock)
+  const records = useCastRecords()
+  const { phase, origin, pan, interpretation, submit, finishCasting, finishManual, openHistory, openRecord, reset } =
+    useCasting(rng, clock, records.add)
   const { capture } = useShareImage()
   const cardRef = useRef<HTMLDivElement>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -35,17 +39,26 @@ export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock 
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center py-12">
-      {phase === 'input' && <QuestionInput onSubmit={submit} />}
+      {phase === 'input' && <QuestionInput onSubmit={submit} onOpenHistory={openHistory} />}
       {phase === 'casting' && <CastingStage onComplete={finishCasting} />}
       {phase === 'manual' && <ManualCast onComplete={finishManual} />}
+      {phase === 'history' && (
+        <HistoryView
+          records={records.records}
+          onOpen={openRecord}
+          onDelete={records.remove}
+          onClear={records.clear}
+          onBack={reset}
+        />
+      )}
       {phase === 'result' && pan && interpretation && (
         <>
           <ResultView pan={pan} interpretation={interpretation} onShare={handleShare} />
           <button
             className="mt-8 text-xs text-ink/40 underline font-serif"
-            onClick={() => { setToast(null); reset() }}
+            onClick={() => { setToast(null); origin === 'history' ? openHistory() : reset() }}
           >
-            再 占 一 卦
+            {origin === 'history' ? '← 返 回 记 录' : '再 占 一 卦'}
           </button>
           {/* 离屏分享卡，供栅格化 */}
           <div className="fixed -left-[9999px] top-0" aria-hidden>
