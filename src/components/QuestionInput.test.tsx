@@ -25,4 +25,14 @@ describe('QuestionInput', () => {
     await userEvent.click(screen.getByRole('button', { name: '?' }))
     expect(screen.getByText(/密码学随机/)).toBeInTheDocument()
   })
+  it('传 onOpenHistory 时显示入口并可点击', async () => {
+    const onOpenHistory = vi.fn()
+    render(<QuestionInput onSubmit={vi.fn()} onOpenHistory={onOpenHistory} />)
+    await userEvent.click(screen.getByTestId('open-history'))
+    expect(onOpenHistory).toHaveBeenCalled()
+  })
+  it('不传 onOpenHistory 时不渲染入口', () => {
+    render(<QuestionInput onSubmit={vi.fn()} />)
+    expect(screen.queryByTestId('open-history')).not.toBeInTheDocument()
+  })
 })

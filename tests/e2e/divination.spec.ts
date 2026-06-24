@@ -50,3 +50,28 @@ test('手动摇卦：逐爻录入成卦出排盘', async ({ page }) => {
   await page.getByTestId('make-hexagram').click()
   await expect(page.getByTestId('pan-row').first()).toBeVisible()
 })
+
+test('起卦记录：起卦后进历史 → 重开 → 删除', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').fill('记录测试问题')
+  await page.getByRole('button', { name: '诚心摇卦' }).click()
+  await page.getByRole('button', { name: /跳过/ }).click()
+  await expect(page.getByText('卦辞')).toBeVisible()
+
+  // 回首页 → 进历史
+  await page.getByRole('button', { name: /再 占 一 卦/ }).click()
+  await page.getByTestId('open-history').click()
+  await expect(page.getByTestId('history-view')).toBeVisible()
+  await expect(page.getByText('记录测试问题')).toBeVisible()
+
+  // 重开记录 → 出结果 → 底部「返回记录」
+  await page.getByTestId('history-item').first().click()
+  await expect(page.getByText('卦辞')).toBeVisible()
+  await page.getByRole('button', { name: /返 回 记 录/ }).click()
+  await expect(page.getByTestId('history-view')).toBeVisible()
+
+  // 删除（接受 confirm）→ 空态
+  page.on('dialog', (d) => d.accept())
+  await page.getByTestId('history-delete').first().click()
+  await expect(page.getByTestId('history-empty')).toBeVisible()
+})
