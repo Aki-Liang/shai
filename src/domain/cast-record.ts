@@ -1,6 +1,9 @@
 import { CastMode, Hexagram } from './types'
 import { lookupHexagram } from './hexagram-lookup'
 import { changedHexagram, movingLineIndexes } from './casting'
+import { buildReadingFromHexagram, CastReading } from './reading'
+import { buildPan, Pan } from './pan'
+import { interpret, Interpretation } from './interpret'
 
 export interface CastRecord {
   id: string
@@ -38,4 +41,13 @@ export function isCastRecord(v: unknown): v is CastRecord {
     const line = l as Record<string, unknown>
     return (line.yinyang === 'yin' || line.yinyang === 'yang') && typeof line.moving === 'boolean'
   })
+}
+
+export async function reconstruct(
+  record: CastRecord,
+): Promise<{ reading: CastReading; pan: Pan; interpretation: Interpretation }> {
+  const reading = buildReadingFromHexagram(record.question, record.lines)
+  const pan = buildPan(reading, new Date(record.createdAt))
+  const interpretation = await interpret(reading)
+  return { reading, pan, interpretation }
 }

@@ -36,3 +36,26 @@ describe('isCastRecord', () => {
     expect(isCastRecord({ id: 'a', createdAt: 1, question: '问', mode: 'cyber', lines: [1, 2, 3, 4, 5, 6] })).toBe(false)
   })
 })
+
+describe('reconstruct', () => {
+  it('用 lines+createdAt 重建出 reading/pan/interpretation', async () => {
+    const { reconstruct } = await import('./cast-record')
+    const record: CastRecord = {
+      id: 'a',
+      createdAt: new Date('2026-06-16T12:00:00').getTime(),
+      question: '我该换工作吗？',
+      mode: 'cyber',
+      lines: [
+        { yinyang: 'yang', moving: false }, { yinyang: 'yang', moving: false },
+        { yinyang: 'yang', moving: false }, { yinyang: 'yang', moving: false },
+        { yinyang: 'yang', moving: false }, { yinyang: 'yang', moving: false },
+      ],
+    }
+    const { reading, pan, interpretation } = await reconstruct(record)
+    expect(reading.question).toBe('我该换工作吗？')
+    expect(interpretation.primaryName).toContain('乾为天')
+    expect(pan.lines).toHaveLength(6)
+    // createdAt 决定干支时间层（六月例日柱两字）
+    expect(pan.pillars?.day.length).toBe(2)
+  })
+})
