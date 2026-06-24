@@ -75,3 +75,24 @@ test('起卦记录：起卦后进历史 → 重开 → 删除', async ({ page })
   await page.getByTestId('history-delete').first().click()
   await expect(page.getByTestId('history-empty')).toBeVisible()
 })
+
+test('分享链接：复制 → 打开链接重建结果页', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.goto('/')
+  await page.getByRole('textbox').fill('分享链接测试')
+  await page.getByRole('button', { name: '诚心摇卦' }).click()
+  await page.getByRole('button', { name: /跳过/ }).click()
+  await expect(page.getByText('卦辞')).toBeVisible()
+
+  // 复制分享链接 → toast
+  await page.getByTestId('share-link-btn').click()
+  await expect(page.getByText('链接已复制')).toBeVisible()
+
+  // 读出剪贴板里的链接，打开它 → 结果页重建 + 底部「去占一卦」
+  const url = await page.evaluate(() => navigator.clipboard.readText())
+  expect(url).toContain('#s=')
+  await page.goto(url)
+  await expect(page.getByText('分享链接测试')).toBeVisible()
+  await expect(page.getByText('卦辞')).toBeVisible()
+  await expect(page.getByRole('button', { name: /去 占 一 卦/ })).toBeVisible()
+})

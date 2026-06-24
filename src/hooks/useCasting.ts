@@ -9,7 +9,7 @@ import { CastRecord, reconstruct } from '../domain/cast-record'
 import { newId } from '../storage/cast-record-store'
 
 type Phase = 'input' | 'casting' | 'manual' | 'result' | 'history'
-type Origin = 'cast' | 'history'
+type Origin = 'cast' | 'history' | 'shared'
 
 export function useCasting(
   rng: RandomSource = cryptoRandom,
@@ -22,6 +22,7 @@ export function useCasting(
   const [reading, setReading] = useState<CastReading | null>(null)
   const [pan, setPan] = useState<Pan | null>(null)
   const [interpretation, setInterpretation] = useState<Interpretation | null>(null)
+  const [record, setRecord] = useState<CastRecord | null>(null)
 
   const submit = useCallback((q: string, mode: CastMode = 'cyber') => {
     setQuestion(q)
@@ -35,7 +36,9 @@ export function useCasting(
     setReading(r)
     setPan(buildPan(r, now))
     setInterpretation(await interpret(r))
-    onCast?.({ id: newId(), createdAt: now.getTime(), question, mode: 'cyber', lines: r.primary.lines })
+    const rec: CastRecord = { id: newId(), createdAt: now.getTime(), question, mode: 'cyber', lines: r.primary.lines }
+    setRecord(rec)
+    onCast?.(rec)
     setPhase('result')
   }, [question, rng, clock, onCast])
 
@@ -45,19 +48,33 @@ export function useCasting(
     setReading(r)
     setPan(buildPan(r, now))
     setInterpretation(await interpret(r))
-    onCast?.({ id: newId(), createdAt: now.getTime(), question, mode: 'manual', lines: r.primary.lines })
+    const rec: CastRecord = { id: newId(), createdAt: now.getTime(), question, mode: 'manual', lines: r.primary.lines }
+    setRecord(rec)
+    onCast?.(rec)
     setPhase('result')
   }, [question, clock, onCast])
 
   const openHistory = useCallback(() => setPhase('history'), [])
 
-  const openRecord = useCallback(async (record: CastRecord) => {
-    const rebuilt = await reconstruct(record)
-    setQuestion(record.question)
+  const openRecord = useCallback(async (rec: CastRecord) => {
+    const rebuilt = await reconstruct(rec)
+    setQuestion(rec.question)
     setReading(rebuilt.reading)
     setPan(rebuilt.pan)
     setInterpretation(rebuilt.interpretation)
+    setRecord(rec)
     setOrigin('history')
+    setPhase('result')
+  }, [])
+
+  const openShared = useCallback(async (rec: CastRecord) => {
+    const rebuilt = await reconstruct(rec)
+    setQuestion(rec.question)
+    setReading(rebuilt.reading)
+    setPan(rebuilt.pan)
+    setInterpretation(rebuilt.interpretation)
+    setRecord(rec)
+    setOrigin('shared')
     setPhase('result')
   }, [])
 
@@ -65,13 +82,14 @@ export function useCasting(
     setReading(null)
     setPan(null)
     setInterpretation(null)
+    setRecord(null)
     setQuestion('')
     setOrigin('cast')
     setPhase('input')
   }, [])
 
   return {
-    phase, origin, reading, pan, interpretation,
-    submit, finishCasting, finishManual, openHistory, openRecord, reset,
+    phase, origin, reading, pan, interpretation, record,
+    submit, finishCasting, finishManual, openHistory, openRecord, openShared, reset,
   }
 }

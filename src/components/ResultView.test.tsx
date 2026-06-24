@@ -110,4 +110,12 @@ describe('ResultView', () => {
       .filter((r) => r.getAttribute('data-source') === 'true')
     expect(primarySourced).toHaveLength(0)
   })
+  it('显示「复制分享链接」按钮并触发 onShare', async () => {
+    const onShare = vi.fn()
+    render(<ResultView pan={pan} interpretation={interp} onShare={onShare} />)
+    const btn = screen.getByTestId('share-link-btn')
+    expect(btn).toHaveTextContent('复制分享链接')
+    await userEvent.click(btn)
+    expect(onShare).toHaveBeenCalled()
+  })
 })
