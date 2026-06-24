@@ -572,7 +572,6 @@ git commit -m "feat: useCastRecords 记录内存态 + 测试隔离清 localStora
 
 ```ts
 import { vi } from 'vitest'
-import { reconstruct } from '../domain/cast-record'
 
 describe('useCasting 起卦记录', () => {
   it('finishCasting 触发 onCast，mode=cyber 且 createdAt=注入时钟时刻', async () => {
