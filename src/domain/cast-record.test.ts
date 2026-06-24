@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { summarize, isCastRecord, CastRecord } from './cast-record'
+import { summarize, isCastRecord, CastRecord, reconstruct } from './cast-record'
 import { Hexagram, Line } from './types'
 
 const line = (yinyang: 'yin' | 'yang', moving = false): Line => ({ yinyang, moving })
@@ -39,7 +39,6 @@ describe('isCastRecord', () => {
 
 describe('reconstruct', () => {
   it('用 lines+createdAt 重建出 reading/pan/interpretation', async () => {
-    const { reconstruct } = await import('./cast-record')
     const record: CastRecord = {
       id: 'a',
       createdAt: new Date('2026-06-16T12:00:00').getTime(),
