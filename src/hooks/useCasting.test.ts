@@ -98,4 +98,14 @@ describe('useCasting 分享', () => {
     expect(result.current.record?.question).toBe('问')
     expect(result.current.record?.createdAt).toBe(new Date('2026-06-16T12:00:00').getTime())
   })
+  it('openShared 不写历史（不调用 onCast）', async () => {
+    const onCast = vi.fn()
+    const { result } = renderHook(() => useCasting(undefined, undefined, onCast))
+    const record = {
+      id: 'shared', createdAt: new Date('2026-06-16T12:00:00').getTime(), question: '分享问', mode: 'cyber' as const,
+      lines: Array.from({ length: 6 }, () => ({ yinyang: 'yang' as const, moving: false })),
+    }
+    await act(async () => { await result.current.openShared(record) })
+    expect(onCast).not.toHaveBeenCalled()
+  })
 })
