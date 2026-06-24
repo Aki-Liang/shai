@@ -74,10 +74,11 @@ export function ResultView({ pan, interpretation, onShare }: Props) {
       <div className="flex flex-col items-center gap-3 w-full mt-2">
         <AiPromptBox pan={pan} analysis={analysis} />
         <button
+          data-testid="share-link-btn"
           className="font-serif tracking-[0.3em] text-ink border border-ink/30 rounded-full px-6 py-2"
           onClick={onShare}
         >
-          生成分享图
+          复制分享链接
         </button>
       </div>
     </div>
