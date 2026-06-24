@@ -21,11 +21,18 @@ export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock 
   const [toast, setToast] = useState<string | null>(null)
 
   // 打开分享链接：挂载时解码 hash → 重建结果页（无效则忽略，正常进首页）
+  // 并监听 hash 变化，支持同会话内打开分享链接（如在地址栏粘贴新链接）
   useEffect(() => {
-    const param = readShareParam()
-    if (!param) return
-    const rec = decodeShareLink(param)
-    if (rec) openShared(rec)
+    const handleHashChange = () => {
+      const param = readShareParam()
+      if (!param) return
+      const rec = decodeShareLink(param)
+      if (rec) openShared(rec)
+    }
+
+    handleHashChange()
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
   }, [openShared])
 
   const handleShareLink = async () => {
