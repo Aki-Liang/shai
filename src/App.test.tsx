@@ -14,7 +14,7 @@ describe('App 全流程（确定性）', () => {
     await userEvent.type(screen.getByRole('textbox'), '我该换工作吗？')
     await userEvent.click(screen.getByRole('button', { name: '诚心摇卦' }))
     await userEvent.click(screen.getByRole('button', { name: /跳过/ }))
-    // 乾为天 初九爻辞「潜龙勿用」只出现在 ResultView（ShareCard 不渲染爻辞），唯一可断言
+    // 乾为天 初九爻辞「潜龙勿用」只出现在 ResultView（爻辞仅在 ResultView 出现），唯一可断言
     expect(await screen.findByText(/潜龙勿用/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /分享/ })).toBeInTheDocument()
   })
