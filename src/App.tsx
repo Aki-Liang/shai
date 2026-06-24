@@ -1,41 +1,47 @@
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCasting } from './hooks/useCasting'
 import { useCastRecords } from './hooks/useCastRecords'
-import { useShareImage } from './hooks/useShareImage'
 import { QuestionInput } from './components/QuestionInput'
 import { CastingStage } from './components/CastingStage'
 import { ManualCast } from './components/ManualCast'
 import { ResultView } from './components/ResultView'
 import { HistoryView } from './components/HistoryView'
-import { ShareCard } from './components/ShareCard'
 import { RandomSource } from './domain/random'
 import { Clock } from './domain/clock'
+import { encodeShareLink, decodeShareLink } from './domain/share-link'
+import { buildShareUrl, readShareParam } from './lib/share-url'
+import { copyText } from './lib/clipboard'
 
 export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock } = {}) {
   const records = useCastRecords()
-  const { phase, origin, pan, interpretation, submit, finishCasting, finishManual, openHistory, openRecord, reset } =
-    useCasting(rng, clock, records.add)
-  const { capture } = useShareImage()
-  const cardRef = useRef<HTMLDivElement>(null)
+  const {
+    phase, origin, record, pan, interpretation,
+    submit, finishCasting, finishManual, openHistory, openRecord, openShared, reset,
+  } = useCasting(rng, clock, records.add)
   const [toast, setToast] = useState<string | null>(null)
 
-  const handleShare = async () => {
-    if (!cardRef.current) return
-    setToast(null)
-    try {
-      const { dataUrl, shared } = await capture(cardRef.current)
-      if (!shared) {
-        const a = document.createElement('a')
-        a.href = dataUrl
-        a.download = '六爻占.png'
-        a.click()
-      }
-    } catch {
-      setToast('生成失败，可长按图片保存')
-    }
+  // 打开分享链接：挂载时解码 hash → 重建结果页（无效则忽略，正常进首页）
+  useEffect(() => {
+    const param = readShareParam()
+    if (!param) return
+    const rec = decodeShareLink(param)
+    if (rec) openShared(rec)
+  }, [openShared])
+
+  const handleShareLink = async () => {
+    if (!record) return
+    const url = buildShareUrl(
+      encodeShareLink({ question: record.question, lines: record.lines, createdAt: record.createdAt }),
+    )
+    setToast((await copyText(url)) ? '链接已复制' : '复制失败，请手动复制')
   }
 
-  const dateText = new Date().toISOString().slice(0, 10).replace(/-/g, '.')
+  const resultBack =
+    origin === 'shared'
+      ? { label: '去 占 一 卦', onClick: reset }
+      : origin === 'history'
+        ? { label: '← 返 回 记 录', onClick: openHistory }
+        : { label: '再 占 一 卦', onClick: reset }
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center py-12">
@@ -53,25 +59,13 @@ export default function App({ rng, clock }: { rng?: RandomSource; clock?: Clock 
       )}
       {phase === 'result' && pan && interpretation && (
         <>
-          <ResultView pan={pan} interpretation={interpretation} onShare={handleShare} />
+          <ResultView pan={pan} interpretation={interpretation} onShare={handleShareLink} />
           <button
             className="mt-8 text-xs text-ink/40 underline font-serif"
-            onClick={() => { setToast(null); origin === 'history' ? openHistory() : reset() }}
+            onClick={() => { setToast(null); resultBack.onClick() }}
           >
-            {origin === 'history' ? '← 返 回 记 录' : '再 占 一 卦'}
+            {resultBack.label}
           </button>
-          {/* 离屏分享卡，供栅格化 */}
-          <div className="fixed -left-[9999px] top-0" aria-hidden>
-            <ShareCard
-              ref={cardRef}
-              interpretation={interpretation}
-              lines={pan.reading.primary.lines}
-              shiYao={pan.reading.primary.data.shiYao}
-              yingYao={pan.reading.primary.data.yingYao}
-              dateText={dateText}
-              pillarsText={pan.pillars ? `${pan.pillars.year}年 · ${pan.pillars.month}月 · ${pan.pillars.day}日` : undefined}
-            />
-          </div>
         </>
       )}
       {toast && (
